@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.FamilyChat" parent="Base.Theme.FamilyChat" />
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/middle</item>
+    </style>
 </resources>
