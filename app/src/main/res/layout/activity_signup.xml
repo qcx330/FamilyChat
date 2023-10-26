@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.SignUpActivity"
+    android:gravity="center"
+    android:orientation="vertical">
+    <TextView
+        android:text="Sign Up"
+        android:textSize="35dp"
+        android:textStyle="bold"
+        android:textColor="@color/end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="15dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textSize="20dp"/>
+        <EditText
+            android:hint="Name"
+            android:id="@+id/edtName"
+            android:textSize="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/edt_rounded" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="15dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textSize="20dp"/>
+        <EditText
+            android:hint="Email"
+            android:id="@+id/edtEmail"
+            android:inputType="textEmailAddress"
+            android:textSize="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/edt_rounded" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="15dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textSize="20dp"/>
+        <EditText
+            android:id="@+id/edtPassword"
+            android:inputType="textPassword"
+            android:textSize="20dp"
+            android:hint="Password"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/edt_rounded" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="15dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Re enter password"
+            android:textSize="20dp"/>
+        <EditText
+            android:id="@+id/edtConfirmPass"
+            android:textSize="20dp"
+            android:inputType="textPassword"
+            android:hint="Re enter password"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/edt_rounded" />
+    </LinearLayout>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSignup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@drawable/gradient_button"
+        android:backgroundTint="@null"
+        android:text="Sign up"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="24dp"
+        android:layout_marginTop="40dp"/>
+</LinearLayout>
