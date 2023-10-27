@@ -29,7 +29,7 @@ class SignUpActivity : AppCompatActivity() {
             val email = binding.edtEmail.text.toString()
             val password = binding.edtPassword.text.toString()
             val confirmPass = binding.edtConfirmPass.text.toString()
-            val user = User(name, email)
+            val user = User(name, email,"")
             Log.d("ADD", "name: $name")
             Log.d("ADD", "email: $email")
             if (confirmPass == password) {
@@ -44,7 +44,7 @@ class SignUpActivity : AppCompatActivity() {
 
 }
 
-fun isEmailValid(email: String): Boolean {
+private fun isEmailValid(email: String): Boolean {
     return Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 

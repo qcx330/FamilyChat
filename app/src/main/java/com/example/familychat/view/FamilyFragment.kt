@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.familychat.R
 import com.example.familychat.viewmodel.FamilyViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class FamilyFragment : Fragment() {
 
@@ -16,11 +17,11 @@ class FamilyFragment : Fragment() {
     }
 
     private lateinit var viewModel: FamilyViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return inflater.inflate(R.layout.fragment_family, container, false)
     }
 
