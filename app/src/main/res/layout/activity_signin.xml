@@ -22,11 +22,11 @@
         android:id="@+id/tvSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="number"
         android:text="Sign In"
-        android:textColor="@color/black"
+        android:textColor="@color/start"
         android:textSize="30dp"
         android:textStyle="bold"
-        android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -34,120 +34,66 @@
         app:layout_constraintTop_toBottomOf="@+id/imgLogo"
         app:layout_constraintVertical_bias="0.062" />
 
-    <!--    <TextView-->
-    <!--        android:id="@+id/tvEmail"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Email"-->
-    <!--        android:textSize="22dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.112"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/tvSignIn"-->
-    <!--        app:layout_constraintVertical_bias="0.075" />-->
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/edtEmail"-->
-    <!--        android:layout_marginLeft="40dp"-->
-    <!--        android:layout_marginRight="40dp"-->
-    <!--        android:padding="5dp"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="50dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.204"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/tvEmail"-->
-    <!--        app:layout_constraintVertical_bias="0.064" />-->
-    <!--    <TextView-->
-    <!--        android:id="@+id/tvPassword"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Password"-->
-    <!--        android:textSize="22dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.112"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/edtEmail"-->
-    <!--        app:layout_constraintVertical_bias="0.075" />-->
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/edtPassword"-->
-    <!--        android:layout_marginLeft="40dp"-->
-    <!--        android:layout_marginRight="40dp"-->
-    <!--        android:padding="5dp"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="50dp"-->
-    <!--        android:inputType="textPassword"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.204"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/tvPassword"-->
-    <!--        app:layout_constraintVertical_bias="0.064" />-->
-
-
     <LinearLayout
-        android:id="@+id/linear_email"
+        android:id="@+id/linear_signin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSignIn"
-        app:layout_constraintVertical_bias="0.099"
-        android:layout_marginLeft="40dp"
-        android:orientation="vertical"
-        android:layout_marginRight="40dp">
+        app:layout_constraintVertical_bias="0.099">
 
-        <TextView
-            android:text="Email"
-            android:textSize="25dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
-        <EditText
-            android:id="@+id/edtEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edt_rounded"
-            android:elevation="5dp"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:padding="10dp" />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/linear_password"
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linear_email"
-        app:layout_constraintVertical_bias="0.099"
-        android:layout_marginLeft="40dp"
-        android:orientation="vertical"
-        android:layout_marginRight="40dp">
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        android:hint="Email"
+        app:hintTextColor="@color/start"
+        app:boxStrokeColor="@color/start"
+        app:startIconDrawable="@drawable/ic_email"
+        app:startIconTint="@color/start">
 
-        <TextView
-            android:text="Password"
-            android:textSize="25dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:maxLength="40"
+            android:singleLine="true"
+            android:textColor="@color/start"/>
 
-        <EditText
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="20dp"
+        android:hint="Password"
+        app:hintTextColor="@color/start"
+        app:boxStrokeColor="@color/start"
+        app:startIconDrawable="@drawable/ic_password"
+        app:startIconTint="@color/start">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edt_rounded"
-            android:elevation="5dp"
-            android:hint="Password"
+            android:layout_height="match_parent"
             android:inputType="textPassword"
-            android:padding="10dp" />
+            android:maxLength="40"
+            android:textColor="@color/start"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
@@ -165,7 +111,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linear_password"
+        app:layout_constraintTop_toBottomOf="@+id/linear_signin"
         app:layout_constraintVertical_bias="0.18" />
 
     <Button
@@ -178,9 +124,9 @@
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.896"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnSignin"
-        app:layout_constraintVertical_bias="0.485" />
+        app:layout_constraintVertical_bias="0.324" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

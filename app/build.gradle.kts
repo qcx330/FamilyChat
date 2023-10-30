@@ -49,6 +49,7 @@ dependencies {
     implementation ("androidx.browser:browser:1.6.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation ("com.makeramen:roundedimageview:2.3.0")
+    implementation ("com.google.android.material:material:1.2.0-rc01")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

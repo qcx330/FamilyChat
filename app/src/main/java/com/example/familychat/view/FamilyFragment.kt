@@ -21,8 +21,9 @@ class FamilyFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_family, container, false)
 
-        return inflater.inflate(R.layout.fragment_family, container, false)
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -60,7 +60,11 @@ private fun registerUser(user:User, email:String, password:String) {
                     .child(userId)
                 databaseReference.setValue(user).addOnCanceledListener(this) {
                     if (it.isSuccessful) {
+                        Toast.makeText(this, "Sign up successfully", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(this, MainActivity::class.java))
+                    }
+                    else {
+                        Log.d("Sign up", "Fail")
                     }
                 }
             }
