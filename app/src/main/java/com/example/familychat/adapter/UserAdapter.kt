@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.R
 import com.example.familychat.model.User
+import com.squareup.picasso.Picasso
 
 class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
     private var userList: List<User> = emptyList()
@@ -16,8 +17,8 @@ class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
         val imgAvatar = itemView.findViewById<ImageView>(R.id.imgAvatar)
         fun bind (user: User){
             tvName.text = user.name
-            if (user.avatar != null)
-                imgAvatar.setImageResource(user.avatar)
+            if (user.avatar != "")
+                Picasso.get().load(user.avatar).into(imgAvatar)
         }
 
     }

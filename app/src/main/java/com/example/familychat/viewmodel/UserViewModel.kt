@@ -1,5 +1,6 @@
 package com.example.familychat.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,46 +13,81 @@ import com.google.firebase.database.ValueEventListener
 
 class UserViewModel : ViewModel() {
     private val userList = MutableLiveData<MutableList<User>>()
-    private val user = MutableLiveData<User>()
+    private val currentUserLiveData = MutableLiveData<User>()
+
+    val currentUser :LiveData<User>
+        get() = currentUserLiveData
 
     //Firebase
     private val userRef = FirebaseDatabase.getInstance().getReference("User")
     private val familyRef = FirebaseDatabase.getInstance().getReference("Family")
-    private val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+    private val auth = FirebaseAuth.getInstance()
+
     init{
         userList.value = mutableListOf()
+        auth.addAuthStateListener { firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            currentUserLiveData.value = User(
+                user!!.displayName!!,
+                user.email!!,
+                user.photoUrl.toString())
+        }
     }
     fun getUserList():LiveData<MutableList<User>>{
         return userList
     }
-
-//    fun getCurrentUser():LiveData<User>{
-//        val current = FirebaseAuth.getInstance().currentUser
-//        val email = current!!.email.toString()
-//        val name = current!!.displayName.toString()
-//        val avatar = current!!.photoUrl
-//        val user = (User(name, email, avatar.toString().toInt()))
-//
-//        return MutableLiveData<User>().value = user
-//    }
-
-    fun addUser(userId:String) {
-        userRef.child(userId).addListenerForSingleValueEvent(object: ValueEventListener{
+    fun getCurrentFamily():String {
+        var familyId:String =""
+        userRef.child(auth.currentUser!!.uid).child("familyId").addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
+                familyId = snapshot.getValue(String::class.java)!!
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d("Get current family", error.message.toString())
             }
-
         })
+        return familyId
+    }
+    fun createFamily(){
+        val newFamilyRef  = familyRef.push()
+        newFamilyRef.child(auth.currentUser!!.uid).setValue(true).addOnCompleteListener {
+            if (it.isSuccessful) {
+                val familyId = newFamilyRef.key
+                val name = currentUser.value!!.name
+                val email = currentUser.value!!.email
+                val avatar = currentUser.value!!.avatar
+                val user = User(name, email, avatar)
+                userList.value?.add(user)
+                userRef.child(auth.currentUser!!.uid).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
+                    if (it1.isSuccessful)
+                        Log.d("Create family","Created successfully")
+                }
+            }
+        }
+    }
+
+    fun addUser(userId:String) {
+        val familyId = getCurrentFamily()
+        familyRef.child(familyId).child(userId).setValue(true).addOnCompleteListener {
+            if (it.isSuccessful) {
+//                val name = currentUser.value!!.name
+//                val email = currentUser.value!!.email
+//                val avatar = currentUser.value!!.avatar
+//                val user = User(name, email, avatar)
+//                userList.value?.add(user)
+                userRef.child(userId).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
+                    if (it1.isSuccessful)
+                        Log.d("Add Member","Added successfully")
+                }
+            }
+        }
 //        val currentList = userList.value
 //        currentList?.add(userId)
 //        userList.value = currentList!!
     }
 
-    fun removeBook(position: Int) {
+    fun removeMember(position: Int) {
         val currentList = userList.value
         if (position >= 0 && position < currentList?.size ?: 0) {
             currentList?.removeAt(position)
