@@ -22,7 +22,10 @@ class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
         }
 
     }
-
+    fun submitList(newList: List<User>) {
+        userList = newList
+        notifyDataSetChanged()
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_member, parent, false)
         return UserViewHolder(view)

@@ -29,7 +29,7 @@ class SignUpActivity : AppCompatActivity() {
             val email = binding.edtEmail.text.toString()
             val password = binding.edtPassword.text.toString()
             val confirmPass = binding.edtConfirmPass.text.toString()
-            val user = User(name, email,"")
+            val user = User(name, email, "")
             Log.d("ADD", "name: $name")
             Log.d("ADD", "email: $email")
             if (confirmPass == password) {
@@ -44,7 +44,7 @@ class SignUpActivity : AppCompatActivity() {
 
 }
 
-private fun isEmailValid(email: String): Boolean {
+fun isEmailValid(email: String): Boolean {
     return Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 
@@ -58,14 +58,9 @@ private fun registerUser(user:User, email:String, password:String) {
                 databaseReference = FirebaseDatabase.getInstance()
                     .getReference("User")
                     .child(userId)
-                databaseReference.setValue(user).addOnCanceledListener(this) {
-                    if (it.isSuccessful) {
-                        Toast.makeText(this, "Sign up successfully", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, MainActivity::class.java))
-                    }
-                    else {
-                        Log.d("Sign up", "Fail")
-                    }
+                databaseReference.setValue(user).addOnSuccessListener(this) {
+                    Toast.makeText(this, "Sign up successfully", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, MainActivity::class.java))
                 }
             }
         }

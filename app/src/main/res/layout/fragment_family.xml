@@ -25,6 +25,7 @@
         android:orientation="vertical"
         android:gravity="center">
         <TextView
+            android:id="@+id/tvCreate"
             android:layout_marginTop="10dp"
             android:textSize="20sp"
             android:text="Create your family"
