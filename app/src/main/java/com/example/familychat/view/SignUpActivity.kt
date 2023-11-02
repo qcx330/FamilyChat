@@ -28,7 +28,7 @@ class SignUpActivity : AppCompatActivity() {
             val name = binding.edtName.text.toString()
             val email = binding.edtEmail.text.toString()
             val password = binding.edtPassword.text.toString()
-            val confirmPass = binding.edtConfirmPass.text.toString()
+            val confirmPass = binding.edtConfirmPassord.text.toString()
             val user = User(name, email, "")
             Log.d("ADD", "name: $name")
             Log.d("ADD", "email: $email")

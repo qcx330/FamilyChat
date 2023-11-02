@@ -1,6 +1,5 @@
 package com.example.familychat.view
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -8,8 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,9 +25,8 @@ class FamilyFragment : Fragment() {
     private lateinit var viewModel: UserViewModel
     private lateinit var btnCreate : AppCompatButton
     private lateinit var btnAdd : AppCompatButton
+    private lateinit var tvCreate : TextView
     private lateinit var recyclerView: RecyclerView
-    private lateinit var tvCreate: TextView
-    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,34 +37,28 @@ class FamilyFragment : Fragment() {
         btnAdd = view.findViewById(R.id.btnAdd)
         tvCreate = view.findViewById(R.id.tvCreate)
         recyclerView = view.findViewById(R.id.listMember)
-
         val adapter = UserAdapter()
         recyclerView.adapter = adapter
-        recyclerView.layoutManager =LinearLayoutManager(context)
-
-        viewModel.currentFamilyId.observe(viewLifecycleOwner) { familyId ->
-            if (familyId.isNotEmpty()) {
-                viewModel.getUsersInFamily(familyId)
-            } else {
-                Log.d("familyId", "unavailable")
-            }
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        if (viewModel.getUserList().value == null)
+        {
+            btnCreate.visibility = View.GONE
         }
+        else btnAdd.visibility = View.GONE
 
-        viewModel.getUserList().observe(viewLifecycleOwner) { userList ->
-            if (userList.isEmpty())
-            {
-                btnAdd.visibility = View.GONE
-            }else {
-                btnCreate.visibility = View.GONE
-                tvCreate.visibility = View.GONE
-                adapter.submitList(userList)
-            }
+        viewModel.getUsersInFamily()
 
+        viewModel.getUserList().observe(viewLifecycleOwner) { users ->
+            adapter.submitList(users)
+            Log.d("get list user", users.toString())
         }
 
         btnCreate.setOnClickListener(){
             viewModel.createFamily()
-            adapter.notifyDataSetChanged()
+        }
+        btnAdd.setOnClickListener(){
+            val showPopup = PopUpFragment()
+            showPopup.show((activity as AppCompatActivity).supportFragmentManager, "showPopup")
         }
 
         return view

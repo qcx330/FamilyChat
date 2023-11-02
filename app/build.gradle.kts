@@ -41,7 +41,6 @@ android {
 }
 
 dependencies {
-    implementation ("com.squareup.picasso:picasso:2.71828")
     implementation ("com.hbb20:ccp:2.5.0")
     implementation(platform("com.google.firebase:firebase-bom:32.4.0"))
     implementation("com.google.firebase:firebase-auth:22.2.0")

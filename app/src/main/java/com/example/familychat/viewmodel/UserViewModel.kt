@@ -13,12 +13,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 class UserViewModel : ViewModel() {
-    private val userList = MutableLiveData<MutableList<User>>()
-    private val currentUserLiveData = MutableLiveData<User>()
-    val adapter = UserAdapter()
+    private val userList = MutableLiveData<List<User>>()
     val currentFamilyId = MutableLiveData<String>()
+    val adapter = UserAdapter()
 
-    val currentUser :LiveData<User>
+    private val currentUserLiveData = MutableLiveData<User>()
+
+    val currentUser: LiveData<User>
         get() = currentUserLiveData
 
     //Firebase
@@ -28,16 +29,27 @@ class UserViewModel : ViewModel() {
 
     init{
         userList.value = mutableListOf()
-        auth.addAuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            currentUserLiveData.value = User(
-                user!!.displayName!!,
-                user.email!!,
-                user.photoUrl.toString())
-        }
+        loadCurrentUser()
     }
-    fun getUserList():LiveData<MutableList<User>>{
+    fun getUserList(): LiveData<List<User>> {
         return userList
+    }
+    private fun loadCurrentUser() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+
+            userRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val user = dataSnapshot.getValue(User::class.java)
+                    user?.let { currentUserLiveData.value = it }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.d("get current user", databaseError.message)
+                }
+            })
+        }
     }
     fun setCurrentFamily() {
         userRef.child(auth.currentUser!!.uid).child("familyId")
@@ -57,6 +69,7 @@ class UserViewModel : ViewModel() {
             })
     }
     fun createFamily(){
+        val users = mutableListOf<User>()
         val newFamilyRef  = familyRef.push()
         newFamilyRef.child(auth.currentUser!!.uid).setValue(true).addOnCompleteListener {
             if (it.isSuccessful) {
@@ -64,32 +77,40 @@ class UserViewModel : ViewModel() {
                 val name = currentUser.value!!.name
                 val email = currentUser.value!!.email
                 val avatar = currentUser.value!!.avatar
-
+                val user = User(name, email, avatar)
+                users.add(user)
+                userList.value = users
                 userRef.child(auth.currentUser!!.uid).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
-                    if (it1.isSuccessful) {
-                        val user = User(name, email, avatar)
-                        userList.value?.add(user)
-                        Log.d("Create family", "Created successfully")
-                    }else {
-                        Log.d("Create family", it1.exception.toString())
-                    }
+                    if (it1.isSuccessful)
+                        Log.d("Create family","Created successfully")
                 }
             }
-            else {
-                Log.d("Create family", it.exception.toString())
-            }
         }
     }
 
-    fun removeMember(position: Int) {
-        val currentList = userList.value
-        if (position >= 0 && position < currentList?.size ?: 0) {
-            currentList?.removeAt(position)
-            userList.value = currentList!!
-        }
-    }
-    fun getUsersInFamily(familyId: String) {
-        familyRef.child(familyId).addListenerForSingleValueEvent(object : ValueEventListener {
+//    fun addUser(userId:String) {
+//        val familyId = getCurrentFamily()
+//        familyRef.child(familyId).child(userId).setValue(true).addOnCompleteListener {
+//            if (it.isSuccessful) {
+////                val name = currentUser.value!!.name
+////                val email = currentUser.value!!.email
+////                val avatar = currentUser.value!!.avatar
+////                val user = User(name, email, avatar)
+////                userList.value?.add(user)
+//                userRef.child(userId).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
+//                    if (it1.isSuccessful)
+//                        Log.d("Add Member","Added successfully")
+//                }
+//            }
+//        }
+////        val currentList = userList.value
+////        currentList?.add(userId)
+////        userList.value = currentList!!
+//    }
+    fun getUsersInFamily() {
+        val users = mutableListOf<User>()
+
+        familyRef.child("-NiAWqNF4EkA1E9vkI2v").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val userIds = mutableListOf<String>()
 
@@ -97,33 +118,30 @@ class UserViewModel : ViewModel() {
                     val userId = childSnapshot.key
                     userId?.let { userIds.add(it) }
                 }
-                fetchUserDetails(userIds)
+
+                for (userId in userIds) {
+                    userRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val user = dataSnapshot.getValue(User::class.java)
+                            user?.let { users.add(it) }
+
+                            // Check if all user details have been fetched
+                            if (users.size == userIds.size) {
+                                userList.value = users
+                                Log.d("user list", userList.value.toString())
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // Handle database error
+                        }
+                    })
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
+                // Handle database error
             }
         })
-    }
-
-    private fun fetchUserDetails(userIds: List<String>) {
-
-        for (userId in userIds) {
-            userRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val user = dataSnapshot.getValue(User::class.java)
-                    user?.let { userList.value?.add(it)
-                        Log.d("fetchUserDetails", "User added: ${it.name}")}
-                    if (userList.value?.size == userIds.size) {
-                        adapter.submitList(userList.value!!)
-                        Log.d("fetchUserDetails", "Adapter updated with ${userList.value?.size} users.")
-
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e("fetchUserDetails", "Database error: ${databaseError.message}")
-                }
-            })
-        }
     }
 }

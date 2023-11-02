@@ -5,10 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.R
 import com.example.familychat.model.User
-import com.squareup.picasso.Picasso
 
 class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
     private var userList: List<User> = emptyList()
@@ -18,7 +18,7 @@ class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
         fun bind (user: User){
             tvName.text = user.name
             if (user.avatar != "")
-                Picasso.get().load(user.avatar).into(imgAvatar)
+                imgAvatar.setImageURI(user.avatar!!.toUri())
         }
 
     }

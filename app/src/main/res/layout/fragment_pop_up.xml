@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="350dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.PopUpFragment"
+    android:orientation="vertical"
+    android:layout_gravity="fill_horizontal">
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        android:hint="User ID"
+        android:layout_marginBottom="20dp"
+        app:hintTextColor="@color/middle"
+        app:boxStrokeColor="@color/middle"
+        app:startIconDrawable="@drawable/ic_search_user"
+        app:startIconTint="@color/middle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtUserId"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:maxLength="40"
+            android:singleLine="true"
+            android:textSize="24dp"
+            android:textColor="@color/middle"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/btnAdd"
+        android:textColor="@color/white"
+        android:background="@drawable/button_rounded"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center"/>
+</LinearLayout>
