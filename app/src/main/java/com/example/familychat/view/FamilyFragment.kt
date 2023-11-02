@@ -40,17 +40,26 @@ class FamilyFragment : Fragment() {
         val adapter = UserAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
-        if (viewModel.getUserList().value == null)
-        {
-            btnCreate.visibility = View.GONE
+        viewModel.getCurrentFamily()
+        viewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
+            id -> if (id!= null){
+                viewModel.getUsersInFamily(id)
+            }
         }
-        else btnAdd.visibility = View.GONE
-
-        viewModel.getUsersInFamily()
 
         viewModel.getUserList().observe(viewLifecycleOwner) { users ->
-            adapter.submitList(users)
-            Log.d("get list user", users.toString())
+            if (users.isEmpty()){
+                btnAdd.visibility = View.GONE
+                btnCreate.visibility = View.VISIBLE
+                tvCreate.visibility = View.VISIBLE
+            }else {
+                btnAdd.visibility = View.VISIBLE
+                btnCreate.visibility = View.GONE
+                tvCreate.visibility = View.GONE
+                adapter.submitList(users)
+                Log.d("get list user", users.toString())
+            }
+
         }
 
         btnCreate.setOnClickListener(){

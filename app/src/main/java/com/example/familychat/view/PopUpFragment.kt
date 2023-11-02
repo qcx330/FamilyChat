@@ -34,7 +34,12 @@ class PopUpFragment : DialogFragment() {
         edtUserId = view.findViewById(R.id.edtUserId)
 
         btnAdd.setOnClickListener(){
-//            viewModel.addUser(edtUserId.text.toString())
+            viewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
+                id->
+                run {
+                    viewModel.addUser(edtUserId.text.toString(), id!!)
+                }
+            }
             dismiss()
         }
         return view
