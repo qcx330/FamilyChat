@@ -11,7 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.familychat.R
@@ -30,6 +32,7 @@ class ProfileFragment : Fragment() {
     private lateinit var tvEmail: TextView
     private lateinit var btnCopy: AppCompatButton
     private lateinit var btnLogout: AppCompatButton
+    private lateinit var btnChangePw: AppCompatButton
     private lateinit var imgAvatar : RoundedImageView
     private val auth = FirebaseAuth.getInstance()
     override fun onCreateView(
@@ -42,11 +45,14 @@ class ProfileFragment : Fragment() {
         tvName = view.findViewById(R.id.tvName)
         tvEmail = view.findViewById(R.id.tvEmail)
         btnCopy = view.findViewById(R.id.btnCopy)
+        btnChangePw = view.findViewById(R.id.btnChangePw)
         imgAvatar = view.findViewById(R.id.imgAvatar)
 
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             if (user != null) {
                 tvName.text = user.name
+                if (user.avatar != "")
+                    imgAvatar.setImageURI(user.avatar!!.toUri())
             }
         }
 
@@ -63,11 +69,25 @@ class ProfileFragment : Fragment() {
             auth.signOut()
             startActivity(Intent(context, SignInActivity::class.java))
         }
+        btnChangePw.setOnClickListener(){
+            val showDialog = ChangePwFragment()
+            showDialog.show((activity as AppCompatActivity).supportFragmentManager, "changepw")
+        }
         imgAvatar.setOnClickListener(){
-
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, 1)
         }
 
         return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            imgAvatar.setImageURI(data?.data)
+            data?.data?.let { viewModel.setUserAvatar(it) }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

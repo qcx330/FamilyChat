@@ -61,6 +61,16 @@
         android:textColor="@color/end" />
     <androidx.appcompat.widget.AppCompatButton
         android:layout_marginTop="20dp"
+        android:id="@+id/btnChangePw"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/end"
+        android:background="@drawable/button_rounded"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Change password"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_marginTop="20dp"
         android:id="@+id/btnLogout"
         android:layout_gravity="center"
         android:textColor="@color/white"

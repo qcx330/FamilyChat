@@ -10,4 +10,7 @@
     <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">#B200B6AB</item>
     </style>
+    <style name="MyErrorTextAppearance" parent="TextAppearance.Design.Error">
+        <item name="android:textColor">@color/error_color</item>
+    </style>
 </resources>

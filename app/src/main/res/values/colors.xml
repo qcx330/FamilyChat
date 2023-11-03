@@ -5,4 +5,5 @@
     <color name="start">#80c450</color>
     <color name="end">#00aeef</color>
     <color name="middle">#00b6ab</color>
+    <color name="error_color">#FF0000</color>
 </resources>

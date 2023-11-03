@@ -1,5 +1,6 @@
 package com.example.familychat.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +12,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 
 class UserViewModel : ViewModel() {
     private val userList = MutableLiveData<List<User>>()
@@ -23,6 +25,7 @@ class UserViewModel : ViewModel() {
         get() = currentUserLiveData
 
     //Firebase
+    val storageReference = FirebaseStorage.getInstance().getReference()
     private val userRef = FirebaseDatabase.getInstance().getReference("User")
     private val familyRef = FirebaseDatabase.getInstance().getReference("Family")
     private val auth = FirebaseAuth.getInstance()
@@ -45,15 +48,40 @@ class UserViewModel : ViewModel() {
             userRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val user = dataSnapshot.getValue(User::class.java)
-                    user?.let { currentUserLiveData.value = it
-                                    if (it.familyId != "")
-                                    currentFamilyId.value = it.familyId!!}
+                    user?.let { currentUserLiveData.value = it }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
                     Log.d("get current user", databaseError.message)
                 }
             })
+        }
+    }
+    fun setUserAvatar(imageUri:Uri){
+        val imageName = "${System.currentTimeMillis()}.jpg"
+        val imageRef = storageReference.child("images/$imageName")
+        imageRef.putFile(imageUri).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                imageRef.downloadUrl.addOnCompleteListener { downloadUrlTask ->
+                    if (downloadUrlTask.isSuccessful) {
+                        val downloadUrl = downloadUrlTask.result.toString()
+                        saveImageDownloadUrlToDatabase(downloadUrl)
+                    } else {
+                        Log.d("Get download url", "Error getting download URL")
+                    }
+                }
+            } else {
+                Log.d("Upload image","error uploading the image")
+            }
+        }
+    }
+    fun saveImageDownloadUrlToDatabase(downloadUrl: String) {
+        val databaseReference = FirebaseDatabase.getInstance().reference
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (userId != null) {
+            // Save the download URL to the user's profile in the database
+            databaseReference.child("users").child(userId).child("avatar").setValue(downloadUrl)
         }
     }
     fun getCurrentFamily() {

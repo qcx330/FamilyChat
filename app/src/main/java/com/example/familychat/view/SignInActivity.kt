@@ -39,6 +39,8 @@ class SignInActivity : AppCompatActivity() {
                 startActivity(Intent(this, MainActivity::class.java))
             else {
                 Log.d("Sign in", it.exception.toString())
+                binding.layoutEmail.error = "Sign in information was incorrect"
+                binding.layoutPassword.error = "Sign in information was incorrect"
                 Toast.makeText(this, "Check log in information again", Toast.LENGTH_SHORT).show()
             }
         }
