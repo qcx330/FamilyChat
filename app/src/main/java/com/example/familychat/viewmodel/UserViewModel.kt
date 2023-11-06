@@ -1,5 +1,6 @@
 package com.example.familychat.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -14,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 
-class UserViewModel : ViewModel() {
+class UserViewModel (): ViewModel() {
     private val userList = MutableLiveData<List<User>>()
     val currentFamilyId = MutableLiveData<String?>()
     val adapter = UserAdapter()
@@ -67,6 +68,7 @@ class UserViewModel : ViewModel() {
                     if (downloadUrlTask.isSuccessful) {
                         val downloadUrl = downloadUrlTask.result.toString()
                         saveImageDownloadUrlToDatabase(downloadUrl)
+                        Log.d("DownloadUrl", downloadUrl)
                     } else {
                         Log.d("Get download url", "Error getting download URL")
                     }
@@ -77,12 +79,10 @@ class UserViewModel : ViewModel() {
         }
     }
     fun saveImageDownloadUrlToDatabase(downloadUrl: String) {
-        val databaseReference = FirebaseDatabase.getInstance().reference
         val userId = FirebaseAuth.getInstance().currentUser?.uid
 
         if (userId != null) {
-            // Save the download URL to the user's profile in the database
-            databaseReference.child("users").child(userId).child("avatar").setValue(downloadUrl)
+            userRef.child(userId).child("avatar").setValue(downloadUrl)
         }
     }
     fun getCurrentFamily() {
@@ -142,12 +142,19 @@ class UserViewModel : ViewModel() {
                 userRef.child(userId).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
                     if (it1.isSuccessful) {
                         val user = fetchDataUserById(userId)
+                        Log.d("add member", user.email)
                         currentList.add(user)
-                        userList.value = currentList!!
+                        userList.value = currentList
+                        adapter.submitList(currentList)
                         adapter.notifyDataSetChanged()
                         Log.d("Add Member", "Added successfully")
                     }
+                    else{
+                        Log.d("Add Member", it1.exception.toString())
+                    }
                 }
+            }else{
+                Log.d("Add Member", it.exception.toString())
             }
         }
     }

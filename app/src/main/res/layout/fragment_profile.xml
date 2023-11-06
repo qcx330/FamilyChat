@@ -25,7 +25,8 @@
         android:layout_height="200dp"
         android:layout_margin="7dp"
         app:riv_corner_radius="50dp"
-        android:src="@drawable/user" />
+        android:src="@drawable/user"
+        android:scaleType="centerCrop"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnCopy"

@@ -1,6 +1,7 @@
 package com.example.familychat.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -35,10 +36,11 @@ class PopUpFragment : DialogFragment() {
 
         btnAdd.setOnClickListener(){
             viewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
-                id->
-                run {
-                    viewModel.addUser(edtUserId.text.toString(), id!!)
-                }
+                    id -> if (id!= null){
+                        Log.d("add member", id)
+                viewModel.addUser(edtUserId.text.toString(), id)
+            }
+                else Log.d("add member", "id null")
             }
             dismiss()
         }

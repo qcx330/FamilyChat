@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.familychat.R
 import com.example.familychat.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -52,7 +53,7 @@ class ProfileFragment : Fragment() {
             if (user != null) {
                 tvName.text = user.name
                 if (user.avatar != "")
-                    imgAvatar.setImageURI(user.avatar!!.toUri())
+                    Glide.with(this).load(user.avatar).into(imgAvatar)
             }
         }
 
@@ -84,7 +85,7 @@ class ProfileFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            imgAvatar.setImageURI(data?.data)
+            Glide.with(this).load(data?.data).into(imgAvatar)
             data?.data?.let { viewModel.setUserAvatar(it) }
         }
         super.onActivityResult(requestCode, resultCode, data)

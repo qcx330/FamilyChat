@@ -29,7 +29,7 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         val currentMessage = messList[position]
-        return if (FirebaseAuth.getInstance().currentUser!!.uid.equals(currentMessage.sender.id))
+        return if (FirebaseAuth.getInstance().currentUser!!.uid.equals(currentMessage.sender))
             sent_item
         else received_item
     }

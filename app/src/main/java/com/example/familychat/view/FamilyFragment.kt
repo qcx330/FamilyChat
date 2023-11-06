@@ -59,7 +59,7 @@ class FamilyFragment : Fragment() {
                 btnAdd.visibility = View.VISIBLE
                 btnCreate.visibility = View.GONE
                 tvCreate.visibility = View.GONE
-                adapter.submitList(users)
+                adapter!!.submitList(users)
                 Log.d("get list user", users.toString())
             }
 
@@ -74,11 +74,6 @@ class FamilyFragment : Fragment() {
         }
 
         return view
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        // TODO: Use the ViewModel
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.familychat.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.familychat.R
 import com.example.familychat.model.User
 
@@ -18,7 +20,7 @@ class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
         fun bind (user: User){
             tvName.text = user.name
             if (user.avatar != "")
-                imgAvatar.setImageURI(user.avatar!!.toUri())
+                Glide.with(itemView).load(user.avatar).into(imgAvatar)
         }
 
     }
