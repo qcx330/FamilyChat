@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.R
 import com.example.familychat.adapter.UserAdapter
+import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.UserViewModel
 
 class FamilyFragment : Fragment() {
@@ -22,7 +23,8 @@ class FamilyFragment : Fragment() {
         fun newInstance() = FamilyFragment()
     }
 
-    private lateinit var viewModel: UserViewModel
+    private lateinit var userViewModel: UserViewModel
+    private lateinit var chatViewModel: ChatViewModel
     private lateinit var btnCreate : AppCompatButton
     private lateinit var btnAdd : AppCompatButton
     private lateinit var tvCreate : TextView
@@ -31,7 +33,8 @@ class FamilyFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
         val view = inflater.inflate(R.layout.fragment_family, container, false)
         btnCreate = view.findViewById(R.id.btnCreate)
         btnAdd = view.findViewById(R.id.btnAdd)
@@ -40,14 +43,14 @@ class FamilyFragment : Fragment() {
         val adapter = UserAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
-        viewModel.getCurrentFamily()
-        viewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
+        userViewModel.getCurrentFamily()
+        userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
             id -> if (id!= null){
-                viewModel.getUsersInFamily(id)
+            userViewModel.getUsersInFamily(id)
             }
         }
 
-        viewModel.getUserList().observe(viewLifecycleOwner) { users ->
+        userViewModel.getUserList().observe(viewLifecycleOwner) { users ->
             if (users.isEmpty()){
                 btnAdd.visibility = View.GONE
                 btnCreate.visibility = View.VISIBLE
@@ -63,7 +66,7 @@ class FamilyFragment : Fragment() {
         }
 
         btnCreate.setOnClickListener(){
-            viewModel.createFamily()
+            userViewModel.createFamily()
         }
         btnAdd.setOnClickListener(){
             val showPopup = PopUpFragment()

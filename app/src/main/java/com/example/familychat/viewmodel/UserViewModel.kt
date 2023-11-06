@@ -28,6 +28,7 @@ class UserViewModel : ViewModel() {
     val storageReference = FirebaseStorage.getInstance().getReference()
     private val userRef = FirebaseDatabase.getInstance().getReference("User")
     private val familyRef = FirebaseDatabase.getInstance().getReference("Family")
+    private val chatRef = FirebaseDatabase.getInstance().getReference("Chat")
     private val auth = FirebaseAuth.getInstance()
 
     init{
@@ -110,13 +111,14 @@ class UserViewModel : ViewModel() {
                 val name = currentUser.value!!.name
                 val email = currentUser.value!!.email
                 val avatar = currentUser.value!!.avatar
-                val user = User(name, email, avatar)
+                val user = User(auth.currentUser!!.uid,name, email, avatar)
                 users.add(user)
                 userList.value = users
                 userRef.child(auth.currentUser!!.uid).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
                     if (it1.isSuccessful)
                         Log.d("Create family","Created successfully")
                 }
+//                chatRef.child(familyId!!).child()
             }
         }
     }

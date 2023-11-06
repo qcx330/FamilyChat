@@ -5,8 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.example.familychat.R
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.familychat.databinding.ActivitySigninBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
 class SignInActivity : AppCompatActivity() {
@@ -39,9 +40,7 @@ class SignInActivity : AppCompatActivity() {
                 startActivity(Intent(this, MainActivity::class.java))
             else {
                 Log.d("Sign in", it.exception.toString())
-                binding.layoutEmail.error = "Sign in information was incorrect"
-                binding.layoutPassword.error = "Sign in information was incorrect"
-                Toast.makeText(this, "Check log in information again", Toast.LENGTH_SHORT).show()
+                Snackbar.make(binding.layoutSignIn, "Check log in information again", Snackbar.LENGTH_SHORT).show()
             }
         }
     }
