@@ -1,4 +1,4 @@
 package com.example.familychat.model
 
-class ChatRoom(val name :String) {
+class ChatRoom(val roomId: String, val roomName: String, val lastMessage: String, val timestamp: Long) {
 }

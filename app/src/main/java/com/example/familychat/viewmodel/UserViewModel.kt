@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.familychat.adapter.UserAdapter
+import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -26,7 +27,7 @@ class UserViewModel (): ViewModel() {
         get() = currentUserLiveData
 
     //Firebase
-    val storageReference = FirebaseStorage.getInstance().getReference()
+    private val storageReference = FirebaseStorage.getInstance().reference
     private val userRef = FirebaseDatabase.getInstance().getReference("User")
     private val familyRef = FirebaseDatabase.getInstance().getReference("Family")
     private val chatRef = FirebaseDatabase.getInstance().getReference("Chat")
@@ -118,7 +119,13 @@ class UserViewModel (): ViewModel() {
                     if (it1.isSuccessful)
                         Log.d("Create family","Created successfully")
                 }
-//                chatRef.child(familyId!!).child()
+                val chatRoom = ChatRoom(familyId!!, "Family", "Welcome to family chat", System.currentTimeMillis())
+                chatRef.child("FamilyChat").child(familyId).setValue(chatRoom).addOnCompleteListener{
+                    it2->if (it2.isSuccessful){
+                        Log.d("Create family chat", "Successfully")
+                    }
+                    else Log.d("Create family chat", it2.exception.toString())
+                }
             }
         }
     }

@@ -24,6 +24,7 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
     }
     inner class ReceiveViewHolder(itemView:View):ViewHolder(itemView){
         val tvMessage = itemView.findViewById<TextView>(R.id.tvMessage)
+        val tvName = itemView.findViewById<TextView>(R.id.tvName)
         val imgAvatar = itemView.findViewById<RoundedImageView>(R.id.imgAvatar)
     }
 
@@ -59,7 +60,8 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
         }else{
             val viewHolder = holder as ReceiveViewHolder
             viewHolder.tvMessage.text == currentMessage.content
-            viewHolder.imgAvatar.setImageURI(currentMessage.sender.avatar!!.toUri())
+            viewHolder.tvName.text == currentMessage.sender
+//            viewHolder.imgAvatar.setImageURI(currentMessage.sender.avatar!!.toUri())
         }
     }
 }

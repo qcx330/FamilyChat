@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:layout_marginRight="50dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="15dp"
+        android:id="@+id/tvName"
+        android:layout_marginLeft="10dp"/>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
 
     <com.makeramen.roundedimageview.RoundedImageView
@@ -25,4 +36,5 @@
         android:padding="10dp"
         android:text="Testandroid app development, android application development, android app development tutorial for beginners, chirag kachhadiya, kachhadiya chirag, free android development, android development tutorials, android studio tutorials, android app, android tutorial for beginners, android tutorial series, app development android, android studio, android chat app, android chat app development, android chatting app, android realtime chat app, android realtime chat app development, android chat app tutorial, android firebase, android firestore, chat app development, chat app development android, android studio chat app, chat app in android studio, chatting app android, chatting app android studio"
         android:textColor="@color/white" />
-</RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>
