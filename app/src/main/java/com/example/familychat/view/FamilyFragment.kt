@@ -24,7 +24,6 @@ class FamilyFragment : Fragment() {
     }
 
     private lateinit var userViewModel: UserViewModel
-    private lateinit var chatViewModel: ChatViewModel
     private lateinit var btnCreate : AppCompatButton
     private lateinit var btnAdd : AppCompatButton
     private lateinit var tvCreate : TextView
@@ -34,12 +33,13 @@ class FamilyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
         val view = inflater.inflate(R.layout.fragment_family, container, false)
         btnCreate = view.findViewById(R.id.btnCreate)
         btnAdd = view.findViewById(R.id.btnAdd)
         tvCreate = view.findViewById(R.id.tvCreate)
         recyclerView = view.findViewById(R.id.listMember)
+
+
         val adapter = UserAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -59,7 +59,7 @@ class FamilyFragment : Fragment() {
                 btnAdd.visibility = View.VISIBLE
                 btnCreate.visibility = View.GONE
                 tvCreate.visibility = View.GONE
-                adapter!!.submitList(users)
+                adapter.submitList(users)
                 Log.d("get list user", users.toString())
             }
 

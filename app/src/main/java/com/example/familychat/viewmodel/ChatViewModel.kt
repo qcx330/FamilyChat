@@ -22,12 +22,12 @@ class ChatViewModel : ViewModel() {
     fun getChatRoomList():LiveData<List<ChatRoom>>{
         return chatRoomList
     }
-    private fun retrieveFamilyChat(familyId:String){
+    fun retrieveFamilyChat(familyId:String){
         chatRef.child("FamilyChat").child(familyId).addValueEventListener(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val roomList = mutableListOf<ChatRoom>()
                 val chatRoom = snapshot.getValue(ChatRoom::class.java)
-                chatRoom?.let { roomList.add(chatRoom) }
+                chatRoom?.let { roomList.add(it) }
                 chatRoomList.value = roomList
             }
 
@@ -38,7 +38,7 @@ class ChatViewModel : ViewModel() {
         })
     }
 
-    private fun retrieveChatList() {
+    fun retrieveChatList() {
         chatRef.child("UserChat").orderByChild("memberIds/$currentUserId")
             .equalTo(true)
             .addValueEventListener(object : ValueEventListener {

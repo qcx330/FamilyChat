@@ -7,7 +7,9 @@ import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.R
+import com.example.familychat.Utils
 import com.example.familychat.model.ChatRoom
+import com.example.familychat.model.User
 import com.makeramen.roundedimageview.RoundedImageView
 
 class ChatAdapter :RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
@@ -18,7 +20,10 @@ class ChatAdapter :RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
         val tvMessage = itemView.findViewById<TextView>(R.id.tvMessage)
         val tvTime = itemView.findViewById<TextView>(R.id.tvTime)
     }
-
+    fun submitList(newList: List<ChatRoom>) {
+        chatRoomList = newList
+        notifyDataSetChanged()
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_chat, parent, false)
         return ChatViewHolder(view)
@@ -30,5 +35,9 @@ class ChatAdapter :RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val chatRow = chatRoomList[position]
+        holder.tvName.text = chatRow.roomName
+        holder.tvMessage.text = chatRow.lastMessage
+        holder.tvTime.text = Utils.getTimeAgo(chatRow.timestamp!!)
+
     }
 }

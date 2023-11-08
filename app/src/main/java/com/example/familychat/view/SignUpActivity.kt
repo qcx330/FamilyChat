@@ -29,13 +29,10 @@ class SignUpActivity : AppCompatActivity() {
             val email = binding.edtEmail.text.toString()
             val password = binding.edtPassword.text.toString()
             val confirmPass = binding.edtConfirmPassord.text.toString()
-            val user = User(name, email, "")
-            Log.d("ADD", "name: $name")
-            Log.d("ADD", "email: $email")
             if (confirmPass == password) {
                 if (isEmailValid(email)) {
                     if (name.isNotEmpty()) {
-                        registerUser(user, email, password)
+                        registerUser(name, email, password)
                     } else Toast.makeText(this, "Name cant be empty", Toast.LENGTH_SHORT).show()
 
                 } else Toast.makeText(this, "Email is invalid", Toast.LENGTH_SHORT).show()
@@ -48,13 +45,13 @@ fun isEmailValid(email: String): Boolean {
     return Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 
-private fun registerUser(user:User, email:String, password:String) {
+private fun registerUser(name:String, email:String, password:String) {
     auth.createUserWithEmailAndPassword(email,password)
         .addOnCompleteListener(this) {
             if (it.isSuccessful) {
                 var userFB: FirebaseUser? = auth.currentUser
                 var userId: String = userFB!!.uid
-
+                val user = User(name, email, "", userId)
                 databaseReference = FirebaseDatabase.getInstance()
                     .getReference("User")
                     .child(userId)
