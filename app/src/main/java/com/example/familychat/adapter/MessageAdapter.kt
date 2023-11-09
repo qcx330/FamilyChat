@@ -16,8 +16,8 @@ import com.makeramen.roundedimageview.RoundedImageView
 class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
     private var messList: List<Message> = emptyList()
 
-    val received_item = 1
-    val sent_item = 1
+    private val received_item = 1
+    private val sent_item = 0
 
     inner class SentViewHolder(itemView:View):ViewHolder(itemView){
         val tvMessage = itemView.findViewById<TextView>(R.id.tvMessage)

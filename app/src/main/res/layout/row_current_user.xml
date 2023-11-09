@@ -15,7 +15,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:scaleType="centerCrop"/>
-
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
@@ -30,31 +29,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.127" />
 
-    <LinearLayout
-        android:layout_marginLeft="20dp"
-        android:layout_width="wrap_content"
+
+    <Button
+        android:id="@+id/btnView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@android:color/transparent"
+        android:text="View profile"
+        android:textColor="@color/middle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/imgAvatar"
-        app:layout_constraintTop_toBottomOf="@id/tvName"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintStart_toEndOf="@+id/imgAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
-        <Button
-            android:id="@+id/btnView"
-            android:text="View profile"
-            android:textColor="@color/middle"
-            android:background="@android:color/transparent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
-        <Button
-            android:id="@+id/btnMessage"
-            android:text="Message"
-            android:textColor="@color/middle"
-            android:background="@android:color/transparent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

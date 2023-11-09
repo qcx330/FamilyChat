@@ -18,9 +18,9 @@ class MessageViewModel : ViewModel() {
     fun getMessageList():LiveData<List<Message>>{
         return messageList
     }
-
     fun sendMessageUser(content:String, roomChatId:String){
         val message = Message(auth.currentUser!!.uid,content, System.currentTimeMillis())
         chatRef.child("UserChat").child(roomChatId).child("Message").setValue(message)
+
     }
 }
