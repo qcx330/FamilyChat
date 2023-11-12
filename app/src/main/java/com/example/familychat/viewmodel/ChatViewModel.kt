@@ -70,7 +70,7 @@ class ChatViewModel : ViewModel() {
         })
     }
     private fun createChatRoom(userId:String){
-        val currentList = chatRoomList.value!!.toMutableList()
+        val currentList = chatRoomList.value.orEmpty().toMutableList()
         val newChatRef = chatRef.child("UserChat").push()
         val members = listOf(auth.currentUser!!.uid, userId)
         val message = Message(auth.currentUser!!.uid, "Hello", System.currentTimeMillis())
@@ -101,14 +101,14 @@ class ChatViewModel : ViewModel() {
     }
 
     fun retrieveUserChat() {
-        chatRef.child("UserChat").orderByChild("member/$currentUserId")
-            .equalTo(true)
+        chatRef.child("UserChat")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val chatRooms = mutableListOf<ChatRoom>()
+                    val chatRooms = chatRoomList.value.orEmpty().toMutableList()
                     for (childSnapshot in snapshot.children) {
                         val chatRoom = childSnapshot.getValue(ChatRoom::class.java)
-                        chatRoom?.let { chatRooms.add(it) }
+                        if (chatRoom?.member!!.contains(auth.currentUser!!.uid))
+                            chatRooms.add(chatRoom)
                     }
                     chatRoomList.value = chatRooms
                     adapter.submitList(chatRooms)
