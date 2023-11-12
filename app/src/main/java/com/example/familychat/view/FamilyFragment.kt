@@ -48,6 +48,7 @@ class FamilyFragment : Fragment() {
             override fun OnClickItem(pos: Int) {
                 userViewModel.getUserList().observe(viewLifecycleOwner){
                     it ->if (it!= null){
+                        chatViewModel.getChatRoom(it[pos].id!!)
                     val intent = Intent(context, ChatActivity::class.java)
                     intent.putExtra("id", it[pos].id)
                     startActivity(intent)

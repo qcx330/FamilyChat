@@ -160,7 +160,6 @@ class UserViewModel (): ViewModel() {
                         currentList.add(user)
                         userList.value = currentList
                         adapter.submitList(currentList)
-                        adapter.notifyDataSetChanged()
                         Log.d("Add Member", "Added successfully")
                     }
                     else{

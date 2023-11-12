@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.familychat.adapter.ChatAdapter
 import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.Message
 import com.example.familychat.view.ChatActivity
@@ -22,7 +23,7 @@ class ChatViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     private val currentUserId = auth.currentUser?.uid
     private val chatRef = database.getReference("Chat")
-
+    val adapter = ChatAdapter()
     fun getChatRoomList():LiveData<List<ChatRoom>>{
         return chatRoomList
     }
@@ -69,20 +70,20 @@ class ChatViewModel : ViewModel() {
         })
     }
     private fun createChatRoom(userId:String){
+        val currentList = chatRoomList.value!!.toMutableList()
         val newChatRef = chatRef.child("UserChat").push()
-        val members = mapOf(
-            auth.currentUser!!.uid to true,
-            userId to true
-        )
-        val chatRoomData = mapOf(
-
-            "members" to members
-        )
-        newChatRef.setValue(chatRoomData)
+        val members = listOf(auth.currentUser!!.uid, userId)
+        val message = Message(auth.currentUser!!.uid, "Hello", System.currentTimeMillis())
+        val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
+        val room = ChatRoom(newChatRef.key!!, "User",message.content, message.time, mapMess, members)
+        newChatRef.setValue(room)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val chatId = newChatRef.key
                     chatRoomId.postValue(chatId)
+                    currentList.add(room)
+                    chatRoomList.value = currentList
+                    adapter.submitList(currentList)
                     println("Chat room created with ID: $chatId")
                 } else {
                     println("Failed to create chat room: ${task.exception}")
@@ -100,7 +101,7 @@ class ChatViewModel : ViewModel() {
     }
 
     fun retrieveUserChat() {
-        chatRef.child("UserChat").orderByChild("members/$currentUserId")
+        chatRef.child("UserChat").orderByChild("member/$currentUserId")
             .equalTo(true)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -110,6 +111,7 @@ class ChatViewModel : ViewModel() {
                         chatRoom?.let { chatRooms.add(it) }
                     }
                     chatRoomList.value = chatRooms
+                    adapter.submitList(chatRooms)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
