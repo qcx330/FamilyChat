@@ -23,7 +23,7 @@ import com.example.familychat.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import org.checkerframework.checker.units.qual.Current
 
-class UserAdapter(val chatViewModel: ChatViewModel) : RecyclerView.Adapter<ViewHolder>() {
+class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolder>() {
     private var userList: List<User> = emptyList()
     private val current = 1
     private val others = 0
@@ -94,11 +94,7 @@ class UserAdapter(val chatViewModel: ChatViewModel) : RecyclerView.Adapter<ViewH
 
             }
             viewHolder.btnMessage.setOnClickListener(){
-                val intent = Intent(holder.itemView.context, ChatActivity::class.java)
-                chatViewModel.checkChatRoom(currentUserId, user.id!!)
-                chatViewModel.getChatRoom()
-                intent.putExtra("id", user.id)
-                holder.itemView.context.startActivity(intent)
+                onItemClick.OnClickItem(position)
             }
         }
     }

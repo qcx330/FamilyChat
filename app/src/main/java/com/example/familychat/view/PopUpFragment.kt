@@ -33,11 +33,10 @@ class PopUpFragment : DialogFragment() {
         viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         btnAdd = view.findViewById(R.id.btnAdd)
         edtUserId = view.findViewById(R.id.edtUserId)
-
+        viewModel.getCurrentFamily()
         btnAdd.setOnClickListener(){
             viewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
                     id -> if (id!= null){
-                        Log.d("add member", id)
                 viewModel.addUser(edtUserId.text.toString(), id)
             }
                 else Log.d("add member", "id null")

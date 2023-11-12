@@ -1,5 +1,6 @@
 package com.example.familychat.view
 
+import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.R
+import com.example.familychat.adapter.RvInterface
 import com.example.familychat.adapter.UserAdapter
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.UserViewModel
@@ -24,6 +26,7 @@ class FamilyFragment : Fragment() {
     }
 
     private lateinit var userViewModel: UserViewModel
+    private lateinit var chatViewModel: ChatViewModel
     private lateinit var btnCreate : AppCompatButton
     private lateinit var btnAdd : AppCompatButton
     private lateinit var tvCreate : TextView
@@ -33,6 +36,7 @@ class FamilyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
         val view = inflater.inflate(R.layout.fragment_family, container, false)
         btnCreate = view.findViewById(R.id.btnCreate)
         btnAdd = view.findViewById(R.id.btnAdd)
@@ -40,7 +44,18 @@ class FamilyFragment : Fragment() {
         recyclerView = view.findViewById(R.id.listMember)
 
 
-        val adapter = UserAdapter()
+        val adapter = UserAdapter(object : RvInterface{
+            override fun OnClickItem(pos: Int) {
+                userViewModel.getUserList().observe(viewLifecycleOwner){
+                    it ->if (it!= null){
+                    val intent = Intent(context, ChatActivity::class.java)
+                    intent.putExtra("id", it[pos].id)
+                    startActivity(intent)
+                    }
+                    else Log.e("intent user id", "null")
+                }
+            }
+        })
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
         userViewModel.getCurrentFamily()

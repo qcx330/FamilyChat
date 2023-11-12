@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.familychat.adapter.RvInterface
 import com.example.familychat.adapter.UserAdapter
 import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.Message
@@ -20,7 +21,10 @@ import com.google.firebase.storage.FirebaseStorage
 class UserViewModel (): ViewModel() {
     private val userList = MutableLiveData<List<User>>()
     val currentFamilyId = MutableLiveData<String?>()
-    val adapter = UserAdapter()
+    val adapter = UserAdapter(object :RvInterface{
+        override fun OnClickItem(pos: Int) {
+        }
+    })
 
     private val currentUserLiveData = MutableLiveData<User>()
 

@@ -1,11 +1,13 @@
 package com.example.familychat.viewmodel
 
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.Message
+import com.example.familychat.view.ChatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,7 +16,7 @@ import com.google.firebase.database.ValueEventListener
 
 class ChatViewModel : ViewModel() {
     private val chatRoomList = MutableLiveData<List<ChatRoom>>()
-    private val chatRoom = MutableLiveData<String?>()
+    private val chatRoomId = MutableLiveData<String?>()
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -24,8 +26,8 @@ class ChatViewModel : ViewModel() {
     fun getChatRoomList():LiveData<List<ChatRoom>>{
         return chatRoomList
     }
-    fun getChatRoom():LiveData<String?>{
-        return chatRoom
+    fun getChatRoomId():LiveData<String?>{
+        return chatRoomId
     }
     fun retrieveFamilyChat(familyId:String){
         chatRef.child("FamilyChat").child(familyId).addValueEventListener(object:ValueEventListener{
@@ -42,24 +44,50 @@ class ChatViewModel : ViewModel() {
 
         })
     }
-    fun checkChatRoom(user1Id: String, user2Id: String) {
-        chatRef.orderByChild("members/$user1Id").equalTo(true)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (childSnapshot in snapshot.children) {
-                        val room = childSnapshot.getValue(ChatRoom::class.java)
-                        if (room != null && room.members?.contains(user2Id) == true) {
-                            chatRoom.value = room.roomId
-                        }
-                        else {
-                            createChatforUser(user1Id, user2Id)
-                        }
+    fun getChatRoom(userId: String){
+        chatRef.child("UserChat").addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (chatRoomSnapshot in snapshot.children) {
+                    val membersSnapshot = chatRoomSnapshot.child("members")
+                    val user1Exists = membersSnapshot.hasChild(auth.currentUser!!.uid)
+                    val user2Exists = membersSnapshot.hasChild(userId)
+
+                    if (user1Exists && user2Exists) {
+                        chatRoomId.postValue(chatRoomSnapshot.key)
+                        Log.d("ChatroomId", chatRoomSnapshot.key.toString())
+                        return
                     }
                 }
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("Chat room exists", error.message)
+                Log.d("ChatroomId", "Not found")
+                createChatRoom(userId)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("ChatroomId", error.message)
+                chatRoomId.postValue(null)
+            }
+        })
+    }
+    private fun createChatRoom(userId:String){
+        val newChatRef = chatRef.child("UserChat").push()
+        val members = mapOf(
+            auth.currentUser!!.uid to true,
+            userId to true
+        )
+        val chatRoomData = mapOf(
+
+            "members" to members
+        )
+        newChatRef.setValue(chatRoomData)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val chatId = newChatRef.key
+                    chatRoomId.postValue(chatId)
+                    println("Chat room created with ID: $chatId")
+                } else {
+                    println("Failed to create chat room: ${task.exception}")
                 }
-            })
+            }
     }
     private fun sendMessage(message: String, chatId:String) {
         val userId = auth.currentUser?.uid
@@ -70,18 +98,7 @@ class ChatViewModel : ViewModel() {
             chatRef.child(chatId).child("message").child(messageId).setValue(chatMessage)
         }
     }
-    fun createChatforUser(user1Id:String, user2Id:String){
-        val chatId = chatRef.child("UserChat").push().key
-        val member = listOf(user1Id, user2Id)
-        val chat = ChatRoom(chatId!!,"", "", 0, null, member)
-        chatRef.child("UserChat").child(chatId).setValue(chat).addOnCompleteListener {
-            if (it.isSuccessful){
-                chatRoom.value = chatId
-                Log.d("Create user chat", "Successfully")
-            }
-            else Log.d("Create user chat", "Fail")
-        }
-    }
+
     fun retrieveUserChat() {
         chatRef.child("UserChat").orderByChild("members/$currentUserId")
             .equalTo(true)
