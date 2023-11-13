@@ -2,7 +2,9 @@ package com.example.familychat.activity
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +25,7 @@ class ChatActivity : AppCompatActivity() {
 
         chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
 
-
+        val chatId = intent.getStringExtra("id")
         val adapter = MessageAdapter()
         messChat = binding.messageChat
         messChat.layoutManager = LinearLayoutManager(this)
@@ -33,11 +35,10 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
         binding.btnSend.setOnClickListener(){
-            chatViewModel.getChatRoomId().observe(this){
-                it ->if (it != null)
-                    Log.d("get chat room id", it)
-                else Log.e("get chat room id", "null")
+            if (chatId != null)
+                Toast.makeText(this, chatId, Toast.LENGTH_SHORT).show()
+            else Log.e("get chat room id", "null")
             }
         }
-    }
+
 }

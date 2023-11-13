@@ -44,15 +44,24 @@ class FamilyFragment : Fragment() {
         tvCreate = view.findViewById(R.id.tvCreate)
         recyclerView = view.findViewById(R.id.listMember)
 
-
         val adapter = UserAdapter(object : RvInterface{
             override fun OnClickItem(pos: Int) {
                 userViewModel.getUserList().observe(viewLifecycleOwner){
                     it ->if (it!= null){
-                        chatViewModel.getChatRoom(it[pos].id!!)
-                        val intent = Intent(context, ChatActivity::class.java)
-                        intent.putExtra("id", it[pos].id)
-                        startActivity(intent)
+                        userViewModel.currentUser.observe(viewLifecycleOwner){
+                            user-> if (user!= null) {
+                            chatViewModel.getChatRoom(user, it[pos])
+                            chatViewModel.getChatRoomId().observe(viewLifecycleOwner){
+                                chatId ->if (chatId!= null) {
+                                    val intent = Intent(context, ChatActivity::class.java)
+                                    intent.putExtra("id", chatId)
+                                    startActivity(intent)
+                            }
+
+                            }
+                        }
+                        }
+
                     }
                     else Log.e("intent user id", "null")
                 }

@@ -46,9 +46,10 @@ class MessageFragment : Fragment() {
         val adapter = ChatAdapter(object : RvInterface{
             override fun OnClickItem(pos: Int) {
                 chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
-                        it ->if (it != null){
+                        chats ->if (chats != null){
+                    Log.d("chat id intent", chats[pos].roomId)
                     val intent = Intent(context, ChatActivity::class.java)
-                    chatViewModel.setChatRoomId(it[pos].roomId)
+                    intent.putExtra("id", chats[pos].roomId)
                     startActivity(intent)
                 }else Log.d("chat id intent", "null")
 
@@ -64,8 +65,6 @@ class MessageFragment : Fragment() {
                     Log.d("familyId", id!!)
             chatViewModel.retrieveFamilyChat(id) }
         }
-        chatViewModel.otherUser.observe(viewLifecycleOwner) { otherUser ->
-            adapter.updateOtherUserDetails(otherUser.id!!, otherUser)}
         chatViewModel.retrieveUserChat()
         chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
             it ->if (it != null) {

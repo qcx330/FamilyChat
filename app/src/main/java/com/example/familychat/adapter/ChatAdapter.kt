@@ -1,5 +1,6 @@
 package com.example.familychat.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,17 +44,17 @@ class ChatAdapter(val onItemClick: RvInterface) :RecyclerView.Adapter<ChatAdapte
     }
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val chatRow = chatRoomList[position]
+
         if (chatRow.roomType == ChatRoomType.FAMILY){
             holder.tvName.text = chatRow.roomName
         }
         else {
-            val otherId = chatRow.member!!.find{it!= currentUserId}?:""
-            val otherUserDetails = otherUserDetailsMap[otherId]
-            otherUserDetails.let { user ->
-                holder.tvName.text = user!!.name
-                Glide.with(holder.itemView).load(user.avatar).into(holder.imgAvatar)
+            val otherUser = chatRow.member!!.firstOrNull { it.id != currentUserId } as User
+                holder.tvName.text = otherUser.name
+                if (otherUser.avatar != "")
+                    Glide.with(holder.itemView).load(otherUser.avatar).into(holder.imgAvatar)
             }
-        }
+
         holder.tvMessage.text = chatRow.lastMessage
         holder.tvTime.text = Utils.getTimeAgo(chatRow.timestamp!!)
         holder.itemView.setOnClickListener(){

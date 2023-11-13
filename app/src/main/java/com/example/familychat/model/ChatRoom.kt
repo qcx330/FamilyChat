@@ -6,7 +6,7 @@ data class ChatRoom(val roomId: String = "",
                val lastMessage: String? = "",
                val timestamp: Long? = 0,
                 val message: Map<String, Message>? = null,
-                val member: List<String> ? = null){
+                val member: List<User> ? = null){
 
 }
 enum class ChatRoomType {
