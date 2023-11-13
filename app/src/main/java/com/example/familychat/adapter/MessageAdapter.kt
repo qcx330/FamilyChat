@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.familychat.R
 import com.example.familychat.model.Message
+import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.makeramen.roundedimageview.RoundedImageView
 
 class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
     private var messList: List<Message> = emptyList()
+    private var userList: List<User> = emptyList()
 
     private val received_item = 1
     private val sent_item = 0
@@ -50,6 +52,10 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
         messList = newList
         notifyDataSetChanged()
     }
+    fun submitUser(newList: List<User>) {
+        userList = newList
+        notifyDataSetChanged()
+    }
     override fun getItemCount(): Int {
         return messList.size
     }
@@ -62,10 +68,12 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
             viewHolder.tvMessage.text = currentMessage.content
         }else{
             val viewHolder = holder as ReceiveViewHolder
+            val sender = userList.firstOrNull { it.id == currentMessage.sender } as User
+            Log.d("sender", sender.toString())
             viewHolder.tvMessage.text = currentMessage.content
-//            viewHolder.tvName.text = currentMessage.sender
-//            if (viewHolder.avatar != "")
-//                Glide.with(holder.itemView).load(otherUser.avatar).into(holder.imgAvatar)
+            viewHolder.tvName.text = sender.name
+            if (sender.avatar != "")
+                Glide.with(holder.itemView).load(sender.avatar).into(holder.imgAvatar)
         }
     }
 }

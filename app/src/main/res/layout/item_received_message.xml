@@ -24,7 +24,8 @@
         android:layout_alignParentLeft="true"
         android:layout_marginStart="2dp"
         android:src="@drawable/user"
-        app:riv_corner_radius="10dp" />
+        app:riv_corner_radius="10dp"
+        android:scaleType="centerCrop"/>
 
     <TextView
         android:id="@+id/tvMessage"

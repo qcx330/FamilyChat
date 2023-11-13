@@ -15,22 +15,28 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.childEvents
 
 class ChatViewModel : ViewModel() {
     private val chatRoomList = MutableLiveData<List<ChatRoom>>()
     private val chatRoomId = MutableLiveData<String?>()
     private val chatRoom = MutableLiveData<ChatRoom?>()
+    private val memberList = MutableLiveData<List<User>>()
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private val currentUserId = auth.currentUser!!.uid
     private val userRef = database.getReference("User")
     private val chatRef = database.getReference("Chat")
+    private val familyRef = database.getReference("Family")
     val adapter = ChatAdapter(object : RvInterface{
         override fun OnClickItem(pos: Int) {
         }
 
     })
+    fun getMemberList():LiveData<List<User>>{
+        return memberList
+    }
     fun getChatRoom():LiveData<ChatRoom?>{
         return chatRoom
     }
@@ -39,6 +45,23 @@ class ChatViewModel : ViewModel() {
     }
     fun getChatRoomId():LiveData<String?>{
         return chatRoomId
+    }
+    fun retrieveMemberList(chatId:String){
+        val users = mutableListOf<User>()
+        chatRef.child("UserChat").child(chatId).child("member")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (memberSnapshot in snapshot.children) {
+                        val user = memberSnapshot.getValue(User::class.java)
+                        user?.let { users.add(it) }
+                    }
+                    memberList.value = users
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            })
     }
     fun retrieveFamilyChat(familyId:String){
         chatRef.child("FamilyChat").child(familyId).addValueEventListener(object:ValueEventListener{
@@ -54,19 +77,6 @@ class ChatViewModel : ViewModel() {
             }
 
         })
-    }
-    fun fetchDataUserById(userId:String):User{
-        var user = User()
-        userRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                user = dataSnapshot.getValue(User::class.java)!!
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.d("get current user", databaseError.message)
-            }
-        })
-        return user
     }
     fun getFamilyChat(familyId: String){
         chatRef.child("FamilyChat")

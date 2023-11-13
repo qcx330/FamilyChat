@@ -53,9 +53,16 @@ class ChatActivity : AppCompatActivity() {
                     messageViewModel.retrieveFamilyMessage(chatId)
                     messageViewModel.getMessageList().observe(this){
                         list ->if (list != null) {
+                        userViewModel.getUsersInFamily(familyId)
+                        userViewModel.getUserList().observe(this){
+                                members -> Log.d("members", members.toString())
+                            adapter.submitUser(members)
                             adapter.submitList(list)
+                        }
                     }else Log.d("Chat list", "null")
                     }
+
+
                 }
                 else {
                     chatViewModel.getChatRoom(chatId!!)
@@ -68,7 +75,14 @@ class ChatActivity : AppCompatActivity() {
                     messageViewModel.retrieveUserMessage(chatId)
                     messageViewModel.getMessageList().observe(this){
                             list ->if (list != null) {
-                        adapter.submitList(list)
+                        chatViewModel.retrieveMemberList(chatId)
+                        chatViewModel.getMemberList().observe(this){
+                            members ->
+                            Log.d("members", members.toString())
+                                adapter.submitUser(members)
+                                adapter.submitList(list)
+
+                        }
                     }else Log.d("Chat list", "null")
                     }
                 }
