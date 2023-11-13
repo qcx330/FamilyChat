@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".view.ChatActivity"
+    tools:context=".activity.ChatActivity"
     android:orientation="vertical"
     android:background="@color/middle">
     <androidx.constraintlayout.widget.ConstraintLayout

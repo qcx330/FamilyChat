@@ -1,19 +1,11 @@
-package com.example.familychat.view
+package com.example.familychat.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.familychat.R
 import com.example.familychat.adapter.MessageAdapter
 import com.example.familychat.databinding.ActivityChatBinding
 import com.example.familychat.viewmodel.ChatViewModel
@@ -31,8 +23,6 @@ class ChatActivity : AppCompatActivity() {
 
         chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
 
-        val intent = Intent()
-        val chatId = intent.getStringExtra("id")
 
         val adapter = MessageAdapter()
         messChat = binding.messageChat
@@ -43,11 +33,11 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
         binding.btnSend.setOnClickListener(){
-            if (chatId != null)
-            {
-                Log.d("chatId", chatId)
+            chatViewModel.getChatRoomId().observe(this){
+                it ->if (it != null)
+                    Log.d("get chat room id", it)
+                else Log.e("get chat room id", "null")
             }
-            else Log.d("chatId", "null")
         }
     }
 }

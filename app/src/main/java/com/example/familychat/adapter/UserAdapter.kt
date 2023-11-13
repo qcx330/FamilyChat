@@ -1,7 +1,5 @@
 package com.example.familychat.adapter
 
-import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,19 +7,13 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.familychat.R
-import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.User
-import com.example.familychat.view.ChatActivity
-import com.example.familychat.view.ProfileFragment
-import com.example.familychat.viewmodel.ChatViewModel
-import com.example.familychat.viewmodel.UserViewModel
+import com.example.familychat.fragment.ProfileFragment
 import com.google.firebase.auth.FirebaseAuth
-import org.checkerframework.checker.units.qual.Current
 
 class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolder>() {
     private var userList: List<User> = emptyList()

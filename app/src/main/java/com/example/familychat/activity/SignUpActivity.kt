@@ -1,4 +1,4 @@
-package com.example.familychat.view
+package com.example.familychat.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

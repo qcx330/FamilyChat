@@ -1,4 +1,4 @@
-package com.example.familychat.view
+package com.example.familychat.fragment
 
 import android.app.Activity.RESULT_OK
 import android.content.ClipData
@@ -13,11 +13,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.familychat.R
+import com.example.familychat.activity.SignInActivity
 import com.example.familychat.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.makeramen.roundedimageview.RoundedImageView

@@ -1,14 +1,13 @@
-package com.example.familychat.view
+package com.example.familychat.activity
 
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.example.familychat.R
-import com.example.familychat.databinding.ActivityMainBinding
+import com.example.familychat.fragment.FamilyFragment
+import com.example.familychat.fragment.MessageFragment
+import com.example.familychat.fragment.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

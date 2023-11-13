@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import com.example.familychat.adapter.RvInterface
 import com.example.familychat.adapter.UserAdapter
 import com.example.familychat.model.ChatRoom
+import com.example.familychat.model.ChatRoomType
 import com.example.familychat.model.Message
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -126,7 +127,7 @@ class UserViewModel (): ViewModel() {
                 }
                 val message = Message(auth.currentUser!!.uid, "Welcome to family chat", System.currentTimeMillis())
                 val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
-                val chatRoom = ChatRoom(familyId!!, "Family",message.content, message.time, mapMess)
+                val chatRoom = ChatRoom(familyId!!,ChatRoomType.FAMILY,"Family",message.content, message.time, mapMess)
                 chatRef.child("FamilyChat").child(familyId).setValue(chatRoom).addOnCompleteListener{
                     it2->if (it2.isSuccessful){
                         Log.d("Create family chat", "Successfully")
@@ -188,16 +189,12 @@ class UserViewModel (): ViewModel() {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             val user = dataSnapshot.getValue(User::class.java)
                             user?.let { users.add(it) }
-
-                            // Check if all user details have been fetched
                             if (users.size == userIds.size) {
                                 userList.value = users
                                 Log.d("user list", userList.value.toString())
                             }
                         }
-
                         override fun onCancelled(databaseError: DatabaseError) {
-                            // Handle database error
                         }
                     })
                 }

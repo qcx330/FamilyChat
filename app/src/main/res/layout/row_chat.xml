@@ -25,6 +25,7 @@
         android:layout_margin="7dp"
         android:layout_marginStart="28dp"
         android:text="Name"
+        android:textColor="@color/start"
         android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imgAvatar"

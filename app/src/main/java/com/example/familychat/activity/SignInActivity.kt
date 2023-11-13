@@ -1,11 +1,10 @@
-package com.example.familychat.view
+package com.example.familychat.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.familychat.databinding.ActivitySigninBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth

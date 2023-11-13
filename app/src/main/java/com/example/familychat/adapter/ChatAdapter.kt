@@ -6,14 +6,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.familychat.R
 import com.example.familychat.Utils
 import com.example.familychat.model.ChatRoom
+import com.example.familychat.model.ChatRoomType
 import com.example.familychat.model.User
+import com.google.firebase.auth.FirebaseAuth
 import com.makeramen.roundedimageview.RoundedImageView
 
-class ChatAdapter :RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
+class ChatAdapter(val onItemClick: RvInterface) :RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     private var chatRoomList: List<ChatRoom> = emptyList()
+    private val otherUserDetailsMap: MutableMap<String, User> = mutableMapOf()
+    val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
     inner class ChatViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val imgAvatar = itemView.findViewById<RoundedImageView>(R.id.imgAvatar)
         val tvName = itemView.findViewById<TextView>(R.id.tvName)
@@ -32,12 +37,27 @@ class ChatAdapter :RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     override fun getItemCount(): Int {
         return chatRoomList.size
     }
-
+    fun updateOtherUserDetails(otherId:String, otherUser:User) {
+        otherUserDetailsMap[otherId] = otherUser
+        notifyDataSetChanged()
+    }
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val chatRow = chatRoomList[position]
-        holder.tvName.text = chatRow.roomName
+        if (chatRow.roomType == ChatRoomType.FAMILY){
+            holder.tvName.text = chatRow.roomName
+        }
+        else {
+            val otherId = chatRow.member!!.find{it!= currentUserId}?:""
+            val otherUserDetails = otherUserDetailsMap[otherId]
+            otherUserDetails.let { user ->
+                holder.tvName.text = user!!.name
+                Glide.with(holder.itemView).load(user.avatar).into(holder.imgAvatar)
+            }
+        }
         holder.tvMessage.text = chatRow.lastMessage
         holder.tvTime.text = Utils.getTimeAgo(chatRow.timestamp!!)
-
+        holder.itemView.setOnClickListener(){
+            onItemClick.OnClickItem(position)
+        }
     }
 }

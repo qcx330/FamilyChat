@@ -1,4 +1,4 @@
-package com.example.familychat.view
+package com.example.familychat.fragment
 
 import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.R
 import com.example.familychat.adapter.RvInterface
 import com.example.familychat.adapter.UserAdapter
+import com.example.familychat.activity.ChatActivity
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.UserViewModel
 
@@ -49,9 +50,9 @@ class FamilyFragment : Fragment() {
                 userViewModel.getUserList().observe(viewLifecycleOwner){
                     it ->if (it!= null){
                         chatViewModel.getChatRoom(it[pos].id!!)
-                    val intent = Intent(context, ChatActivity::class.java)
-                    intent.putExtra("id", it[pos].id)
-                    startActivity(intent)
+                        val intent = Intent(context, ChatActivity::class.java)
+                        intent.putExtra("id", it[pos].id)
+                        startActivity(intent)
                     }
                     else Log.e("intent user id", "null")
                 }
