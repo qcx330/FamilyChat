@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener
 class ChatViewModel : ViewModel() {
     private val chatRoomList = MutableLiveData<List<ChatRoom>>()
     private val chatRoomId = MutableLiveData<String?>()
+    private val chatRoom = MutableLiveData<ChatRoom?>()
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -30,6 +31,9 @@ class ChatViewModel : ViewModel() {
         }
 
     })
+    fun getChatRoom():LiveData<ChatRoom?>{
+        return chatRoom
+    }
     fun getChatRoomList():LiveData<List<ChatRoom>>{
         return chatRoomList
     }
@@ -64,8 +68,39 @@ class ChatViewModel : ViewModel() {
         })
         return user
     }
-    fun getChatRoom(chatRoomId:String){
+    fun getFamilyChat(familyId: String){
+        chatRef.child("FamilyChat")
+            .child(familyId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val room = snapshot.getValue(ChatRoom::class.java)
+                    if (room != null) {
+                        chatRoom.postValue(room)
+                    } else {
+                        Log.e("getFamilyChat", "null")
+                    }
+                }
 
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("getFamilyChat", "Error: ${error.message}")
+                }
+            })
+    }
+    fun getChatRoom(chatRoomId:String){
+        chatRef.child("UserChat")
+            .child(chatRoomId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val room = snapshot.getValue(ChatRoom::class.java)
+                if (room != null) {
+                    chatRoom.postValue(room)
+                } else {
+                    Log.e("getChatRoomData", "null")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("getChatRoomData", "Error: ${error.message}")
+            }
+        })
     }
     fun getChatRoom(currentUser:User, user: User){
         chatRef.child("UserChat").addListenerForSingleValueEvent(object :ValueEventListener{

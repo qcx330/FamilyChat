@@ -56,7 +56,7 @@ class MessageViewModel : ViewModel() {
 
         }
     }
-    private fun retrieveFamilyMessage(chatId:String){
+    fun retrieveFamilyMessage(chatId:String){
         chatRef.child("FamilyChat").child(chatId)
             .child("message").addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -75,7 +75,7 @@ class MessageViewModel : ViewModel() {
 
             })
     }
-    private fun retrieveUserMessage(chatId:String){
+    fun retrieveUserMessage(chatId:String){
         chatRef.child("UserChat").child(chatId)
             .child("message").addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {

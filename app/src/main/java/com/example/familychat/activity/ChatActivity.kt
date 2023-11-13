@@ -10,12 +10,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.adapter.MessageAdapter
 import com.example.familychat.databinding.ActivityChatBinding
+import com.example.familychat.model.User
 import com.example.familychat.viewmodel.ChatViewModel
+import com.example.familychat.viewmodel.MessageViewModel
+import com.example.familychat.viewmodel.UserViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private lateinit var messChat : RecyclerView
     private lateinit var chatViewModel: ChatViewModel
+    private lateinit var userViewModel: UserViewModel
+    private lateinit var messageViewModel: MessageViewModel
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,12 +31,50 @@ class ChatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        messageViewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
 
         val chatId = intent.getStringExtra("id")
         val adapter = MessageAdapter()
         messChat = binding.messageChat
         messChat.layoutManager = LinearLayoutManager(this)
         messChat.adapter = adapter
+
+        userViewModel.getCurrentFamily()
+        userViewModel.getCurrentFamilyId().observe(this){
+            familyId -> if (familyId!= null){
+                if (familyId == chatId){
+                    chatViewModel.getFamilyChat(familyId)
+                    chatViewModel.getChatRoom().observe(this){
+                        if (it != null){
+                            binding.tvName.text = it.roomName
+                        }
+                    }
+                    messageViewModel.retrieveFamilyMessage(chatId)
+                    messageViewModel.getMessageList().observe(this){
+                        list ->if (list != null) {
+                            adapter.submitList(list)
+                    }else Log.d("Chat list", "null")
+                    }
+                }
+                else {
+                    chatViewModel.getChatRoom(chatId!!)
+                    chatViewModel.getChatRoom().observe(this){
+                        if (it != null){
+                            val user = it.member!!.firstOrNull { it.id != auth.currentUser!!.uid } as User
+                            binding.tvName.text = user.name
+                        }
+                    }
+                    messageViewModel.retrieveUserMessage(chatId)
+                    messageViewModel.getMessageList().observe(this){
+                            list ->if (list != null) {
+                        adapter.submitList(list)
+                    }else Log.d("Chat list", "null")
+                    }
+                }
+
+        }else Log.d("getFamilyIdChat", "null")
+        }
 
         binding.btnBack.setOnClickListener(){
             finish()

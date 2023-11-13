@@ -1,6 +1,7 @@
 package com.example.familychat.adapter
 
 import android.content.IntentSender.SendIntentException
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.example.familychat.R
 import com.example.familychat.model.Message
 import com.google.firebase.auth.FirebaseAuth
@@ -54,14 +56,16 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentMessage = messList[position]
+        Log.d("current message", currentMessage.toString())
         if (holder.javaClass == SentViewHolder::class.java){
             val viewHolder = holder as SentViewHolder
             viewHolder.tvMessage.text = currentMessage.content
         }else{
             val viewHolder = holder as ReceiveViewHolder
-            viewHolder.tvMessage.text == currentMessage.content
-            viewHolder.tvName.text == currentMessage.sender
-//            viewHolder.imgAvatar.setImageURI(currentMessage.sender.avatar!!.toUri())
+            viewHolder.tvMessage.text = currentMessage.content
+//            viewHolder.tvName.text = currentMessage.sender
+//            if (viewHolder.avatar != "")
+//                Glide.with(holder.itemView).load(otherUser.avatar).into(holder.imgAvatar)
         }
     }
 }
