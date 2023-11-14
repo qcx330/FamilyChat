@@ -30,7 +30,7 @@ class MessageViewModel : ViewModel() {
         val chatRoomRef = chatRef.child("UserChat").child(chatId)
         val messageId = chatRoomRef.child("message").push().key
         val currentList = messageList.value.orEmpty().toMutableList()
-        if (currentUserId != null && messageId != null) {
+        if (messageId != null) {
             val chatMessage = Message(currentUserId, message, System.currentTimeMillis(), MessageType.TEXT)
             chatRef.child("UserChat").child(chatId).child("message")
                 .child(messageId).setValue(chatMessage)
@@ -50,7 +50,7 @@ class MessageViewModel : ViewModel() {
         val familyChatRef = chatRef.child("FamilyChat").child(chatId)
         val messageId = familyChatRef.child("message").push().key
         val currentList = messageList.value.orEmpty().toMutableList()
-        if (currentUserId != null && messageId != null) {
+        if (messageId != null) {
             val chatMessage = Message(currentUserId, message, System.currentTimeMillis(), MessageType.TEXT)
             chatRef.child(chatId).child("message")
                 .child(messageId).setValue(chatMessage)
@@ -104,7 +104,7 @@ class MessageViewModel : ViewModel() {
 
             })
     }
-    fun setUserAvatar(imageUri: Uri){
+    fun sendImageTextUserChat(imageUri: Uri, chatId:String){
         val imageName = "${System.currentTimeMillis()}.jpg"
         val imageRef = storageReference.child("images/$imageName")
         imageRef.putFile(imageUri).addOnCompleteListener { task ->
@@ -112,7 +112,7 @@ class MessageViewModel : ViewModel() {
                 imageRef.downloadUrl.addOnCompleteListener { downloadUrlTask ->
                     if (downloadUrlTask.isSuccessful) {
                         val downloadUrl = downloadUrlTask.result.toString()
-                        saveImageDownloadUrlToDatabase(downloadUrl)
+                        saveImageDownloadUrlToDatabase(downloadUrl, chatId)
                         Log.d("DownloadUrl", downloadUrl)
                     } else {
                         Log.d("Get download url", "Error getting download URL")
@@ -123,25 +123,24 @@ class MessageViewModel : ViewModel() {
             }
         }
     }
-    fun saveImageDownloadUrlToDatabase(downloadUrl: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-        if (userId != null) {
-            chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (childSnapshot in snapshot.children) {
-                        val roomId = childSnapshot.key
-                        val membersSnapshot = childSnapshot.child("member")
-                        if (membersSnapshot.hasChild(userId)) {
-                            membersSnapshot.child(userId).ref.child("avatar").setValue(downloadUrl)
-                        }
-                    }
+    fun saveImageDownloadUrlToDatabase(downloadUrl: String, chatId: String) {
+        val chatRoomRef = chatRef.child("UserChat").child(chatId)
+        val messageId = chatRoomRef.child("message").push().key
+        val currentList = messageList.value.orEmpty().toMutableList()
+        if (messageId != null) {
+            val message = Message(currentUserId, downloadUrl, System.currentTimeMillis(), MessageType.IMAGE)
+            chatRef.child("UserChat").child(chatId).child("message")
+                .child(messageId).setValue(message)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        chatRoomRef.child("lastMessage").setValue("sent a image")
+                        chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
+                        currentList.add(message)
+                        messageList.value = currentList
+                        adapter.submitList(currentList)
+                    } else Log.d("send message to user chat", task.exception.toString())
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("ChanggUserAvatar", error.message)
-                }
-            })
         }
     }
 }
