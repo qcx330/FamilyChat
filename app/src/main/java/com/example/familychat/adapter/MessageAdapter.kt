@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.familychat.R
+import com.example.familychat.Utils
 import com.example.familychat.model.Message
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -25,11 +26,13 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
 
     inner class SentViewHolder(itemView:View):ViewHolder(itemView){
         val tvMessage = itemView.findViewById<TextView>(R.id.tvMessage)
+        val tvTime = itemView.findViewById<TextView>(R.id.tvTime)
     }
     inner class ReceiveViewHolder(itemView:View):ViewHolder(itemView){
         val tvMessage = itemView.findViewById<TextView>(R.id.tvMessage)
         val tvName = itemView.findViewById<TextView>(R.id.tvName)
         val imgAvatar = itemView.findViewById<RoundedImageView>(R.id.imgAvatar)
+        val tvTime = itemView.findViewById<TextView>(R.id.tvTime)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -66,12 +69,14 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
         if (holder.javaClass == SentViewHolder::class.java){
             val viewHolder = holder as SentViewHolder
             viewHolder.tvMessage.text = currentMessage.content
+            viewHolder.tvTime.text = Utils.formatTimestamp(currentMessage.time!!)
         }else{
             val viewHolder = holder as ReceiveViewHolder
             val sender = userList.firstOrNull { it.id == currentMessage.sender } as User
             Log.d("sender", sender.toString())
             viewHolder.tvMessage.text = currentMessage.content
             viewHolder.tvName.text = sender.name
+            viewHolder.tvTime.text = Utils.formatTimestamp(currentMessage.time!!)
             if (sender.avatar != "")
                 Glide.with(holder.itemView).load(sender.avatar).into(holder.imgAvatar)
         }

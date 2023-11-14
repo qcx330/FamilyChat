@@ -61,8 +61,6 @@ class ChatActivity : AppCompatActivity() {
                         }
                     }else Log.d("Chat list", "null")
                     }
-
-
                 }
                 else {
                     chatViewModel.getChatRoom(chatId!!)
@@ -99,5 +97,4 @@ class ChatActivity : AppCompatActivity() {
             else Log.e("get chat room id", "null")
             }
         }
-
 }

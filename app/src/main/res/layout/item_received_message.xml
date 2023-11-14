@@ -38,4 +38,10 @@
         android:text="Testandroid app development, android application development, android app development tutorial for beginners, chirag kachhadiya, kachhadiya chirag, free android development, android development tutorials, android studio tutorials, android app, android tutorial for beginners, android tutorial series, app development android, android studio, android chat app, android chat app development, android chatting app, android realtime chat app, android realtime chat app development, android chat app tutorial, android firebase, android firestore, chat app development, chat app development android, android studio chat app, chat app in android studio, chatting app android, chatting app android studio"
         android:textColor="@color/white" />
     </RelativeLayout>
+    <TextView
+        android:id="@+id/tvTime"
+        android:text="hh:mm"
+        android:gravity="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

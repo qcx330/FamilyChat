@@ -56,7 +56,7 @@ class ChatAdapter(val onItemClick: RvInterface) :RecyclerView.Adapter<ChatAdapte
             }
 
         holder.tvMessage.text = chatRow.lastMessage
-        holder.tvTime.text = Utils.getTimeAgo(chatRow.timestamp!!)
+        holder.tvTime.text = Utils.formatTimestamp(chatRow.timestamp!!)
         holder.itemView.setOnClickListener(){
             onItemClick.OnClickItem(position)
         }

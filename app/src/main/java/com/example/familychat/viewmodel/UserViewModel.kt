@@ -11,6 +11,7 @@ import com.example.familychat.adapter.UserAdapter
 import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.ChatRoomType
 import com.example.familychat.model.Message
+import com.example.familychat.model.MessageType
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -90,6 +91,22 @@ class UserViewModel (): ViewModel() {
 
         if (userId != null) {
             userRef.child(userId).child("avatar").setValue(downloadUrl)
+
+        chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (childSnapshot in snapshot.children) {
+                    val roomId = childSnapshot.key
+                    val membersSnapshot = childSnapshot.child("member")
+                    if (membersSnapshot.hasChild(userId)) {
+                        membersSnapshot.child(userId).ref.child("avatar").setValue(downloadUrl)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("ChanggUserAvatar", error.message)
+            }
+        })
         }
     }
     fun getCurrentFamily() {
@@ -125,7 +142,7 @@ class UserViewModel (): ViewModel() {
                     if (it1.isSuccessful)
                         Log.d("Create family","Created successfully")
                 }
-                val message = Message(auth.currentUser!!.uid, "Welcome to family chat", System.currentTimeMillis())
+                val message = Message(auth.currentUser!!.uid, "Welcome to family chat", System.currentTimeMillis(), MessageType.TEXT)
                 val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
                 val chatRoom = ChatRoom(familyId!!,ChatRoomType.FAMILY,"Family",message.content, message.time, mapMess)
                 chatRef.child("FamilyChat").child(familyId).setValue(chatRoom).addOnCompleteListener{

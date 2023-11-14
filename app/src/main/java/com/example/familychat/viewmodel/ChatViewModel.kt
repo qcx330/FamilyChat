@@ -9,6 +9,7 @@ import com.example.familychat.adapter.RvInterface
 import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.ChatRoomType
 import com.example.familychat.model.Message
+import com.example.familychat.model.MessageType
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -145,7 +146,7 @@ class ChatViewModel : ViewModel() {
         val currentList = chatRoomList.value.orEmpty().toMutableList()
         val newChatRef = chatRef.child("UserChat").push()
         val members = listOf(currentUser, user)
-        val message = Message(currentUserId, "Hello", System.currentTimeMillis())
+        val message = Message(currentUserId, "Hello", System.currentTimeMillis(), MessageType.TEXT)
         val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
         val room = ChatRoom(newChatRef.key!!,ChatRoomType.USER, "User",message.content, message.time, mapMess, members)
         newChatRef.setValue(room)
