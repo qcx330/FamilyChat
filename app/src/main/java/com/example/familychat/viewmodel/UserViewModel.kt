@@ -23,6 +23,7 @@ import com.google.firebase.storage.FirebaseStorage
 class UserViewModel (): ViewModel() {
     private val userList = MutableLiveData<List<User>>()
     val currentFamilyId = MutableLiveData<String?>()
+    val user = MutableLiveData<User>()
     val adapter = UserAdapter(object :RvInterface{
         override fun OnClickItem(pos: Int) {
         }
@@ -43,6 +44,9 @@ class UserViewModel (): ViewModel() {
     init{
         userList.value = mutableListOf()
         loadCurrentUser()
+    }
+    fun getUser():LiveData<User>{
+        return user
     }
     fun getUserList(): LiveData<List<User>> {
         return userList
@@ -92,21 +96,21 @@ class UserViewModel (): ViewModel() {
         if (userId != null) {
             userRef.child(userId).child("avatar").setValue(downloadUrl)
 
-        chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (childSnapshot in snapshot.children) {
-                    val roomId = childSnapshot.key
-                    val membersSnapshot = childSnapshot.child("member")
-                    if (membersSnapshot.hasChild(userId)) {
-                        membersSnapshot.child(userId).ref.child("avatar").setValue(downloadUrl)
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.d("ChanggUserAvatar", error.message)
-            }
-        })
+//        chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                for (childSnapshot in snapshot.children) {
+//                    val membersSnapshot = childSnapshot.child("member")
+//                    if (membersSnapshot.hasChild(userId)) {
+//                        val user = membersSnapshot.child(userId)
+//                        user.child("avatar").ref.setValue(downloadUrl)
+//                    }
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                // Handle onCancelled event
+//            }
+//        })
         }
     }
     fun getCurrentFamily() {
@@ -155,17 +159,18 @@ class UserViewModel (): ViewModel() {
         }
     }
     fun fetchDataUserById(userId:String):User{
-        var user = User()
+        var temp = User()
         userRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                user = dataSnapshot.getValue(User::class.java)!!
+                temp = dataSnapshot.getValue(User::class.java)!!
+                temp?.let { user.value = temp }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.d("get current user", databaseError.message)
             }
         })
-        return user
+        return temp
     }
     fun addUser(userId:String, familyId: String) {
         val currentList = userList.value!!.toMutableList()

@@ -48,21 +48,42 @@ class ChatViewModel : ViewModel() {
         return chatRoomId
     }
     fun retrieveMemberList(chatId:String){
-        val users = mutableListOf<User>()
         chatRef.child("UserChat").child(chatId).child("member")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    for (memberSnapshot in snapshot.children) {
-                        val user = memberSnapshot.getValue(User::class.java)
-                        user?.let { users.add(it) }
+                    val userIds = mutableListOf<String>()
+
+                    for (userIdSnapshot in snapshot.children) {
+                        val userId = userIdSnapshot.value
+                        userId?.let { userIds.add(it.toString()) }
                     }
-                    memberList.value = users
+                    fetchUserDetails(userIds)
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle error
+                    Log.d("retrieveMemberList", error.message)
                 }
             })
+    }
+
+    fun fetchUserDetails(userIds: List<String>) {
+        val users = mutableListOf<User>()
+        for (userId in userIds) {
+            val userId= userRef.child(userId)
+            userId.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(userSnapshot: DataSnapshot) {
+                    val user = userSnapshot.getValue(User::class.java)
+                    if (user != null) {
+                        users.add(user)
+                    }
+                    memberList.postValue(users)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("fetchUserDetails", error.message)
+                }
+            })
+        }
     }
     fun retrieveFamilyChat(familyId:String){
         chatRef.child("FamilyChat").child(familyId).addValueEventListener(object:ValueEventListener{
@@ -113,7 +134,7 @@ class ChatViewModel : ViewModel() {
             }
         })
     }
-    fun getChatRoom(currentUser:User, user: User){
+    fun getChatRoomWithUser(userId: String){
         chatRef.child("UserChat").addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (childSnapshot in snapshot.children)
@@ -121,19 +142,15 @@ class ChatViewModel : ViewModel() {
                     val membersSnapshot = childSnapshot.child("member")
                     val users = mutableListOf<User>()
 
-                    for (memberSnapshot in membersSnapshot.children) {
-                        val member = memberSnapshot.getValue(User::class.java)
-                        member?.let { users.add(it) }
-                    }
-                    if (users.contains(currentUser) && users.contains(user)) {
+                    val user1Exists = membersSnapshot.hasChild(currentUserId)
+                    val user2Exists = membersSnapshot.hasChild(userId)
+                    if (user1Exists && user2Exists) {
                         chatRoomId.postValue(childSnapshot.key)
-                        Log.d("ChatroomId", childSnapshot.key.toString())
-                        chatRoomId.postValue(childSnapshot.key.toString())
                         return
                     }
                 }
                 Log.d("ChatroomId", "Not found")
-                createChatRoom(currentUser, user)
+                createChatRoom(userId)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -142,10 +159,10 @@ class ChatViewModel : ViewModel() {
             }
         })
     }
-    private fun createChatRoom(currentUser :User,user: User){
+    private fun createChatRoom(userId: String){
         val currentList = chatRoomList.value.orEmpty().toMutableList()
         val newChatRef = chatRef.child("UserChat").push()
-        val members = listOf(currentUser, user)
+        val members = listOf(currentUserId, userId)
         val message = Message(currentUserId, "Hello", System.currentTimeMillis(), MessageType.TEXT)
         val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
         val room = ChatRoom(newChatRef.key!!,ChatRoomType.USER, "User",message.content, message.time, mapMess, members)
@@ -171,14 +188,14 @@ class ChatViewModel : ViewModel() {
                     val chatRooms = chatRoomList.value.orEmpty().toMutableList()
                     for (childSnapshot in snapshot.children) {
                         val membersSnapshot = childSnapshot.child("member")
-                        val membersList = mutableListOf<User>()
+                        val membersList = mutableListOf<String>()
 
                         for (memberSnapshot in membersSnapshot.children) {
-                            val user = memberSnapshot.getValue(User::class.java)
+                            val user = memberSnapshot.getValue(String::class.java)
                             user?.let { membersList.add(it) }
                         }
 
-                        if (membersList.any { it.id == currentUserId }) {
+                        if (membersList.any { it == currentUserId }) {
                             val chatRoom = childSnapshot.getValue(ChatRoom::class.java)
                             chatRoom?.let { chatRooms.add(it) }
                         }

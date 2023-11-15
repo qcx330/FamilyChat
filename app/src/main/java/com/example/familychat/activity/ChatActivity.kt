@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
-    private lateinit var messChat : RecyclerView
+    private lateinit var messChat: RecyclerView
     private lateinit var chatViewModel: ChatViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var messageViewModel: MessageViewModel
@@ -41,60 +41,70 @@ class ChatActivity : AppCompatActivity() {
         messChat.adapter = adapter
 
         userViewModel.getCurrentFamily()
-        userViewModel.getCurrentFamilyId().observe(this){
-            familyId -> if (familyId!= null){
-                if (familyId == chatId){
+        userViewModel.getCurrentFamilyId().observe(this) { familyId ->
+            if (familyId != null) {
+                if (familyId == chatId) {
                     chatViewModel.getFamilyChat(familyId)
-                    chatViewModel.getChatRoom().observe(this){
-                        if (it != null){
+                    chatViewModel.getChatRoom().observe(this) {
+                        if (it != null) {
                             binding.tvName.text = it.roomName
                         }
                     }
                     messageViewModel.retrieveFamilyMessage(chatId)
-                    messageViewModel.getMessageList().observe(this){
-                        list ->if (list != null) {
-                        userViewModel.getUsersInFamily(familyId)
-                        userViewModel.getUserList().observe(this){
-                                members -> Log.d("members", members.toString())
-                            adapter.submitUser(members)
-                            adapter.submitList(list)
-                        }
-                    }else Log.d("Chat list", "null")
+                    messageViewModel.getMessageList().observe(this) { list ->
+                        if (list != null) {
+                            userViewModel.getUsersInFamily(familyId)
+                            userViewModel.getUserList().observe(this) { members ->
+                                Log.d("members", members.toString())
+                                adapter.submitUser(members)
+                                adapter.submitList(list)
+                            }
+                        } else Log.d("Chat list", "null")
                     }
-                }
-                else {
+                } else {
                     chatViewModel.getChatRoom(chatId!!)
-                    chatViewModel.getChatRoom().observe(this){
-                        if (it != null){
-                            val user = it.member!!.firstOrNull { it.id != auth.currentUser!!.uid } as User
-                            binding.tvName.text = user.name
+                    chatViewModel.getChatRoom().observe(this) {
+                        if (it != null) {
+                            val userId =
+                                it.member!!.firstOrNull { it != auth.currentUser!!.uid }
+                            Log.d("chatroomid", it.roomId!!)
+                            Log.d("userId", userId!!)
+                            Log.d("user",userViewModel.fetchDataUserById(userId).toString() )
+                            val user = userViewModel.fetchDataUserById(userId)
+                            userViewModel.getUser().observe(this){
+                                it -> it?.let { binding.tvName.text = it.name }
+                            }
+
                         }
                     }
                     messageViewModel.retrieveUserMessage(chatId)
-                    messageViewModel.getMessageList().observe(this){
-                            list ->if (list != null) {
-                        chatViewModel.retrieveMemberList(chatId)
-                        chatViewModel.getMemberList().observe(this){
-                            members ->
-                            Log.d("members", members.toString())
+                    messageViewModel.getMessageList().observe(this) { list ->
+                        if (list != null) {
+                            chatViewModel.retrieveMemberList(chatId)
+                            chatViewModel.getMemberList().observe(this) { members ->
+                                Log.d("members", members.toString())
                                 adapter.submitUser(members)
                                 adapter.submitList(list)
 
-                        }
-                    }else Log.d("Chat list", "null")
+                            }
+                        } else Log.d("Chat list", "null")
                     }
                 }
 
-        }else Log.d("getFamilyIdChat", "null")
+            } else Log.d("getFamilyIdChat", "null")
         }
 
-        binding.btnBack.setOnClickListener(){
+        binding.btnBack.setOnClickListener() {
             finish()
         }
-        binding.btnSend.setOnClickListener(){
+        binding.btnSend.setOnClickListener() {
             if (chatId != null)
                 Toast.makeText(this, chatId, Toast.LENGTH_SHORT).show()
             else Log.e("get chat room id", "null")
-            }
         }
+        binding.btnAttach.setOnClickListener(){
+
+        }
+    }
+
 }

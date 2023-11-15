@@ -18,7 +18,7 @@ import com.makeramen.roundedimageview.RoundedImageView
 
 class ChatAdapter(val onItemClick: RvInterface) :RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     private var chatRoomList: List<ChatRoom> = emptyList()
-    private val otherUserDetailsMap: MutableMap<String, User> = mutableMapOf()
+    private var memberList: List<User> = emptyList()
     val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
     inner class ChatViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val imgAvatar = itemView.findViewById<RoundedImageView>(R.id.imgAvatar)
@@ -30,6 +30,10 @@ class ChatAdapter(val onItemClick: RvInterface) :RecyclerView.Adapter<ChatAdapte
         chatRoomList = newList
         notifyDataSetChanged()
     }
+    fun submitUser(newList: List<User>) {
+        memberList = newList
+        notifyDataSetChanged()
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_chat, parent, false)
         return ChatViewHolder(view)
@@ -38,10 +42,6 @@ class ChatAdapter(val onItemClick: RvInterface) :RecyclerView.Adapter<ChatAdapte
     override fun getItemCount(): Int {
         return chatRoomList.size
     }
-    fun updateOtherUserDetails(otherId:String, otherUser:User) {
-        otherUserDetailsMap[otherId] = otherUser
-        notifyDataSetChanged()
-    }
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val chatRow = chatRoomList[position]
 
@@ -49,10 +49,12 @@ class ChatAdapter(val onItemClick: RvInterface) :RecyclerView.Adapter<ChatAdapte
             holder.tvName.text = chatRow.roomName
         }
         else {
-            val otherUser = chatRow.member!!.firstOrNull { it.id != currentUserId } as User
-                holder.tvName.text = otherUser.name
-                if (otherUser.avatar != "")
-                    Glide.with(holder.itemView).load(otherUser.avatar).into(holder.imgAvatar)
+            val otherUser = memberList.firstOrNull { it.id != currentUserId }
+            Log.d("memberList", memberList.toString())
+            Log.d("otherUser", otherUser.toString())
+//                holder.tvName.text = otherUser!!.name
+//                if (otherUser.avatar != "")
+//                    Glide.with(holder.itemView).load(otherUser.avatar).into(holder.imgAvatar)
             }
 
         holder.tvMessage.text = chatRow.lastMessage

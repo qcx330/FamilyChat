@@ -18,6 +18,7 @@ import com.example.familychat.activity.ChatActivity
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.MessageViewModel
 import com.example.familychat.viewmodel.UserViewModel
+import kotlin.math.log
 
 class MessageFragment : Fragment() {
 
@@ -47,7 +48,7 @@ class MessageFragment : Fragment() {
             override fun OnClickItem(pos: Int) {
                 chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
                         chats ->if (chats != null){
-                    Log.d("chat id intent", chats[pos].roomId)
+                    Log.d("chat id intent", chats[pos].roomId!!)
                     val intent = Intent(context, ChatActivity::class.java)
                     intent.putExtra("id", chats[pos].roomId)
                     startActivity(intent)
@@ -67,13 +68,23 @@ class MessageFragment : Fragment() {
         }
         chatViewModel.retrieveUserChat()
         chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
-            it ->if (it != null) {
-            adapter.submitList(it)
+            chatRoom ->if (chatRoom != null) {
+            adapter.submitList(chatRoom)
+            chatRoom.forEach{chat->
+                    chatViewModel.retrieveMemberList(chat.roomId!!)
+                    chatViewModel.getMemberList().observe(viewLifecycleOwner){member->
+                        member?. let {
+                            Log.d("memberchat", member.toString())
+                            adapter.submitUser(member)
+                        }
+                    }
+                }
             tvMessage.visibility = View.GONE
         }
             else {
                 tvMessage.visibility = View.VISIBLE
         }
+
 
         }
         return view

@@ -28,9 +28,9 @@ class FamilyFragment : Fragment() {
 
     private lateinit var userViewModel: UserViewModel
     private lateinit var chatViewModel: ChatViewModel
-    private lateinit var btnCreate : AppCompatButton
-    private lateinit var btnAdd : AppCompatButton
-    private lateinit var tvCreate : TextView
+    private lateinit var btnCreate: AppCompatButton
+    private lateinit var btnAdd: AppCompatButton
+    private lateinit var tvCreate: TextView
     private lateinit var recyclerView: RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,44 +44,38 @@ class FamilyFragment : Fragment() {
         tvCreate = view.findViewById(R.id.tvCreate)
         recyclerView = view.findViewById(R.id.listMember)
 
-        val adapter = UserAdapter(object : RvInterface{
+        val adapter = UserAdapter(object : RvInterface {
             override fun OnClickItem(pos: Int) {
-                userViewModel.getUserList().observe(viewLifecycleOwner){
-                    it ->if (it!= null){
-                        userViewModel.currentUser.observe(viewLifecycleOwner){
-                            user-> if (user!= null) {
-                            chatViewModel.getChatRoom(user, it[pos])
-                            chatViewModel.getChatRoomId().observe(viewLifecycleOwner){
-                                chatId ->if (chatId!= null) {
-                                    val intent = Intent(context, ChatActivity::class.java)
-                                    intent.putExtra("id", chatId)
-                                    startActivity(intent)
-                            }
-
+                userViewModel.getUserList().observe(viewLifecycleOwner) { it ->
+                    if (it != null) {
+                        chatViewModel.getChatRoomWithUser(it[pos].id!!)
+                        chatViewModel.getChatRoomId().observe(viewLifecycleOwner) { chatId ->
+                            if (chatId != null) {
+                                val intent = Intent(context, ChatActivity::class.java)
+                                intent.putExtra("id", chatId)
+                                startActivity(intent)
                             }
                         }
-                        }
 
-                    }
-                    else Log.e("intent user id", "null")
+                    } else Log.e("intent user id", "null")
                 }
             }
         })
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
         userViewModel.getCurrentFamily()
-        userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
-            id -> if (id!= null){
-            userViewModel.getUsersInFamily(id)
+        userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner) { id ->
+            if (id != null) {
+                userViewModel.getUsersInFamily(id)
             }
         }
 
         userViewModel.getUserList().observe(viewLifecycleOwner) { users ->
-            if (users.isEmpty()){
+            if (users.isEmpty()) {
                 btnAdd.visibility = View.GONE
                 btnCreate.visibility = View.VISIBLE
                 tvCreate.visibility = View.VISIBLE
-            }else {
+            } else {
                 btnAdd.visibility = View.VISIBLE
                 btnCreate.visibility = View.GONE
                 tvCreate.visibility = View.GONE
@@ -91,10 +85,10 @@ class FamilyFragment : Fragment() {
 
         }
 
-        btnCreate.setOnClickListener(){
+        btnCreate.setOnClickListener() {
             userViewModel.createFamily()
         }
-        btnAdd.setOnClickListener(){
+        btnAdd.setOnClickListener() {
             val showPopup = PopUpFragment()
             showPopup.show((activity as AppCompatActivity).supportFragmentManager, "showPopup")
         }
