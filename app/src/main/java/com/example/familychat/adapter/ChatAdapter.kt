@@ -23,7 +23,6 @@ import com.makeramen.roundedimageview.RoundedImageView
 class ChatAdapter(val onItemClick: RvInterface) :
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     private var chatRoomList: List<ChatRoom> = emptyList()
-    private var memberList: List<User> = emptyList()
     val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
     private val database = FirebaseDatabase.getInstance()
     private val userRef = database.getReference("User")
@@ -40,12 +39,6 @@ class ChatAdapter(val onItemClick: RvInterface) :
         chatRoomList = newList
         notifyDataSetChanged()
     }
-
-    fun submitUser(newList: List<User>) {
-        memberList = newList
-        notifyDataSetChanged()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_chat, parent, false)
         return ChatViewHolder(view)
@@ -104,10 +97,6 @@ class ChatAdapter(val onItemClick: RvInterface) :
                     }
 
                 })
-//            val otherUser = memberList.firstOrNull { it.id != currentUserId }
-//            Log.d("memberList", memberList.toString())
-//            Log.d("otherUser", otherUser.toString())
-
         }
 
         holder.tvMessage.text = chatRow.lastMessage

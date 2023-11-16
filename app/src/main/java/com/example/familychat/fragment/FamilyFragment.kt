@@ -49,13 +49,16 @@ class FamilyFragment : Fragment() {
                 userViewModel.getUserList().observe(viewLifecycleOwner) { it ->
                     if (it != null) {
                         chatViewModel.getChatRoomWithUser(it[pos].id!!)
-                        chatViewModel.getChatRoomId().observe(viewLifecycleOwner) { chatId ->
-                            if (chatId != null) {
-                                val intent = Intent(context, ChatActivity::class.java)
-                                intent.putExtra("id", chatId)
+                        Log.d("byusergetchatid userid", it[pos].id!!)
+                        chatViewModel.getChatRoomId().observe(viewLifecycleOwner){
+                            chatroom->val intent = Intent(context, ChatActivity::class.java)
+                            if (chatroom != null) {
+                                intent.putExtra("id", chatroom)
+                                Log.d("byusergetchatid", chatroom)
                                 startActivity(intent)
                             }
                         }
+
 
                     } else Log.e("intent user id", "null")
                 }

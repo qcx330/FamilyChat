@@ -6,7 +6,7 @@
     android:layout_marginRight="10dp">
 
     <ImageView
-        android:id="@+id/tvMessage"
+        android:id="@+id/imgMessage"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -17,4 +17,11 @@
         android:scaleType="fitCenter"
         android:src="@drawable/image_created_with_a_mobile_phone"
         />
+    <TextView
+        android:id="@+id/tvTime"
+        android:text="hh:mm"
+        android:layout_alignStart="@+id/imgMessage"
+        android:layout_below="@+id/imgMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </RelativeLayout>

@@ -38,5 +38,12 @@
             android:padding="10dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"/>
+        <TextView
+            android:id="@+id/tvTime"
+            android:text="hh:mm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/imgMessage"
+            android:layout_below="@+id/imgMessage"/>
     </RelativeLayout>
 </LinearLayout>

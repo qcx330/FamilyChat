@@ -81,11 +81,9 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
     }
     fun submitList(newList: List<Message>) {
         messList = newList
-        notifyDataSetChanged()
     }
     fun submitUser(newList: List<User>) {
         userList = newList
-        notifyDataSetChanged()
     }
     override fun getItemCount(): Int {
         return messList.size
@@ -102,6 +100,7 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
             viewHolder.tvTime.text = Utils.formatTimestamp(currentMessage.time!!)
         }else{
             val viewHolder = holder as ReceiveViewHolder
+            Log.d("Userlistadapter", userList.toString())
             val sender = userList.firstOrNull { it.id == currentMessage.sender } as User
             Log.d("sender", sender.toString())
             if (currentMessage.type == MessageType.TEXT)

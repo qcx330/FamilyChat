@@ -70,15 +70,6 @@ class MessageFragment : Fragment() {
         chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
             chatRoom ->if (chatRoom != null) {
             adapter.submitList(chatRoom)
-            chatRoom.forEach{chat->
-                    chatViewModel.retrieveMemberList(chat.roomId!!)
-                    chatViewModel.getMemberList().observe(viewLifecycleOwner){member->
-                        member?. let {
-                            Log.d("memberchat", member.toString())
-                            adapter.submitUser(member)
-                        }
-                    }
-                }
             tvMessage.visibility = View.GONE
         }
             else {

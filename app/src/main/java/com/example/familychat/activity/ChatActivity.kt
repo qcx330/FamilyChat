@@ -1,5 +1,6 @@
 package com.example.familychat.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -22,8 +23,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var chatViewModel: ChatViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var messageViewModel: MessageViewModel
-    lateinit var chatId :String
-    var currentFamily :Boolean = false
+    lateinit var currentChat :String
+    lateinit var currentFamily :String
     private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +37,8 @@ class ChatActivity : AppCompatActivity() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         messageViewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
 
-        chatId = intent.getStringExtra("id")
+        val chatId = intent.getStringExtra("id")!!
+        currentChat = chatId
         val adapter = MessageAdapter()
         messChat = binding.messageChat
         messChat.layoutManager = LinearLayoutManager(this)
@@ -45,27 +47,32 @@ class ChatActivity : AppCompatActivity() {
         userViewModel.getCurrentFamily()
         userViewModel.getCurrentFamilyId().observe(this) { familyId ->
             if (familyId != null) {
-                currentFamily = true
+                currentFamily = familyId
                 if (familyId == chatId) {
                     chatViewModel.retrieveFamilyChat(familyId)
                     chatViewModel.getChatRoom().observe(this) {
                         if (it != null) {
                             binding.tvName.text = it.roomName
+                            Log.d("chatroomName", it.roomName!!)
                         }
                     }
+//                    binding.tvName.text = "Family"
                     messageViewModel.retrieveFamilyMessage(chatId)
                     messageViewModel.getMessageList().observe(this) { list ->
                         if (list != null) {
                             userViewModel.getUsersInFamily(familyId)
                             userViewModel.getUserList().observe(this) { members ->
-                                Log.d("members", members.toString())
-                                adapter.submitUser(members)
-                                adapter.submitList(list)
+                                if (members.isNotEmpty() && list.isNotEmpty()) {
+                                    Log.d("members", members.toString())
+                                    adapter.submitList(list)
+                                    adapter.submitUser(members)
+                                    adapter.notifyDataSetChanged()
+                                }
                             }
                         } else Log.d("Chat list", "null")
                     }
                 } else {
-                    chatViewModel.getChatRoom(chatId!!)
+                    chatViewModel.getChatRoom(chatId)
                     chatViewModel.getChatRoom().observe(this) {
                         if (it != null) {
                             val userId =
@@ -79,16 +86,17 @@ class ChatActivity : AppCompatActivity() {
                             }
 
                         }
+                        else Log.d("chatroomid", "null")
                     }
                     messageViewModel.retrieveUserMessage(chatId)
                     messageViewModel.getMessageList().observe(this) { list ->
                         if (list != null) {
                             adapter.submitList(list)
-//                            chatViewModel.retrieveMemberList(chatId)
-//                            chatViewModel.getMemberList().observe(this) { members ->
-//                                Log.d("members", members.toString())
-//                                adapter.submitUser(members)
-//                            }
+                            chatViewModel.retrieveMemberList(chatId)
+                            chatViewModel.getMemberList().observe(this) { members ->
+                                adapter.submitUser(members)
+                                adapter.notifyDataSetChanged()
+                            }
                         } else Log.d("Chat list", "null")
                     }
                 }
@@ -100,9 +108,10 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
         binding.btnSend.setOnClickListener() {
-            if (currentFamily)
-                messageViewModel.sendFamilyMessage(binding.edtText, chatId)
-            else messageViewModel.sendUserMessage(binding.edtText, chatId)
+            if (currentFamily == chatId)
+                messageViewModel.sendFamilyMessage(binding.edtText.text.toString(), chatId)
+            else messageViewModel.sendUserMessage(binding.edtText.text.toString(), chatId)
+            binding.edtText.text.clear()
             adapter.notifyDataSetChanged()
         }
         binding.btnAttach.setOnClickListener(){
@@ -113,12 +122,10 @@ class ChatActivity : AppCompatActivity() {
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
-//            Glide.with(this).load(data?.data).into(imgAvatar)
-//            data?.data?.let { viewModel.setUserAvatar(it) }
             data?.data?.let{
-                if (currentFamily)
-                    messageViewModel.sendImageFamilyChat(it, chatId)
-                else messageViewModel.sendImageUserChat(it, chatId)
+                if (currentFamily == currentChat)
+                    messageViewModel.sendImageFamilyChat(it, currentFamily)
+                else messageViewModel.sendImageUserChat(it, currentChat)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
