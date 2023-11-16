@@ -80,13 +80,12 @@ class ChatActivity : AppCompatActivity() {
                     messageViewModel.retrieveUserMessage(chatId)
                     messageViewModel.getMessageList().observe(this) { list ->
                         if (list != null) {
-                            chatViewModel.retrieveMemberList(chatId)
-                            chatViewModel.getMemberList().observe(this) { members ->
-                                Log.d("members", members.toString())
-                                adapter.submitUser(members)
-                                adapter.submitList(list)
-
-                            }
+                            adapter.submitList(list)
+//                            chatViewModel.retrieveMemberList(chatId)
+//                            chatViewModel.getMemberList().observe(this) { members ->
+//                                Log.d("members", members.toString())
+//                                adapter.submitUser(members)
+//                            }
                         } else Log.d("Chat list", "null")
                     }
                 }
