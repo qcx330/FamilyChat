@@ -22,6 +22,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var chatViewModel: ChatViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var messageViewModel: MessageViewModel
+    lateinit var chatId :String
+    var currentFamily :Boolean = false
     private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +36,7 @@ class ChatActivity : AppCompatActivity() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         messageViewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
 
-        val chatId = intent.getStringExtra("id")
+        chatId = intent.getStringExtra("id")
         val adapter = MessageAdapter()
         messChat = binding.messageChat
         messChat.layoutManager = LinearLayoutManager(this)
@@ -43,8 +45,9 @@ class ChatActivity : AppCompatActivity() {
         userViewModel.getCurrentFamily()
         userViewModel.getCurrentFamilyId().observe(this) { familyId ->
             if (familyId != null) {
+                currentFamily = true
                 if (familyId == chatId) {
-                    chatViewModel.getFamilyChat(familyId)
+                    chatViewModel.retrieveFamilyChat(familyId)
                     chatViewModel.getChatRoom().observe(this) {
                         if (it != null) {
                             binding.tvName.text = it.roomName
@@ -97,13 +100,27 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
         binding.btnSend.setOnClickListener() {
-            if (chatId != null)
-                Toast.makeText(this, chatId, Toast.LENGTH_SHORT).show()
-            else Log.e("get chat room id", "null")
+            if (currentFamily)
+                messageViewModel.sendFamilyMessage(binding.edtText, chatId)
+            else messageViewModel.sendUserMessage(binding.edtText, chatId)
+            adapter.notifyDataSetChanged()
         }
         binding.btnAttach.setOnClickListener(){
-
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, 1)
         }
     }
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+//            Glide.with(this).load(data?.data).into(imgAvatar)
+//            data?.data?.let { viewModel.setUserAvatar(it) }
+            data?.data?.let{
+                if (currentFamily)
+                    messageViewModel.sendImageFamilyChat(it, chatId)
+                else messageViewModel.sendImageUserChat(it, chatId)
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 }

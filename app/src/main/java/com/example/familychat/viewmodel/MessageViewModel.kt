@@ -104,7 +104,7 @@ class MessageViewModel : ViewModel() {
 
             })
     }
-    fun sendImageTextUserChat(imageUri: Uri, chatId:String){
+    fun sendImageUserChat(imageUri: Uri, chatId:String){
         val imageName = "${System.currentTimeMillis()}.jpg"
         val imageRef = storageReference.child("images/$imageName")
         imageRef.putFile(imageUri).addOnCompleteListener { task ->
@@ -113,6 +113,41 @@ class MessageViewModel : ViewModel() {
                     if (downloadUrlTask.isSuccessful) {
                         val downloadUrl = downloadUrlTask.result.toString()
                         saveImageDownloadUrlToDatabase(downloadUrl, chatId)
+                        Log.d("DownloadUrl", downloadUrl)
+                    } else {
+                        Log.d("Get download url", "Error getting download URL")
+                    }
+                }
+            } else {
+                Log.d("Upload image","error uploading the image")
+            }
+        }
+    }
+    fun sendImageFamilyChat(imageUri: Uri, chatId:String){
+        val currentList = messageList.value.orEmpty().toMutableList()
+        val imageName = "${System.currentTimeMillis()}.jpg"
+        val imageRef = storageReference.child("images/$imageName")
+        imageRef.putFile(imageUri).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                imageRef.downloadUrl.addOnCompleteListener { downloadUrlTask ->
+                    if (downloadUrlTask.isSuccessful) {
+                        val downloadUrl = downloadUrlTask.result.toString()
+                        val chatRoomRef = chatRef.child("FamilyChat").child(chatId)
+                        val messageId = chatRoomRef.child("message").push().key
+                        if (messageId != null) {
+                            val message = Message(currentUserId, downloadUrl, System.currentTimeMillis(), MessageType.IMAGE)
+                            chatRoomRef.child("message")
+                                .child(messageId).setValue(message)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        chatRoomRef.child("lastMessage").setValue("sent a image")
+                                        chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
+                                        currentList.add(message)
+                                        messageList.value = currentList
+                                        adapter.submitList(currentList)
+                                    } else Log.d("send message to user chat", task.exception.toString())
+                                }
+                        }
                         Log.d("DownloadUrl", downloadUrl)
                     } else {
                         Log.d("Get download url", "Error getting download URL")
