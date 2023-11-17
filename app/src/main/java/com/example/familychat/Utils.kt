@@ -18,9 +18,9 @@ class Utils {
             if (currentDate.get(Calendar.YEAR) == messageDate.get(Calendar.YEAR) &&
                 currentDate.get(Calendar.DAY_OF_YEAR) == messageDate.get(Calendar.DAY_OF_YEAR)
             ) {
-                dateFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
+                dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
             } else {
-                dateFormat = SimpleDateFormat("hh:mm DD/MM/yyyy", Locale.getDefault())
+                dateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
             }
             return dateFormat.format(messageDate.time)
         }

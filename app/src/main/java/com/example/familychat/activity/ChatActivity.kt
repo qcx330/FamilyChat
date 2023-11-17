@@ -64,7 +64,8 @@ class ChatActivity : AppCompatActivity() {
                             userViewModel.getUserList().observe(this) { members ->
                                 if (members.isNotEmpty() && list.isNotEmpty()) {
                                     Log.d("members", members.toString())
-                                    adapter.submitList(list)
+                                    val sortedList = list.sortedBy { it.time }
+                                    adapter.submitList(sortedList)
                                     adapter.submitUser(members)
                                     adapter.notifyDataSetChanged()
                                 }
@@ -91,7 +92,8 @@ class ChatActivity : AppCompatActivity() {
                     messageViewModel.retrieveUserMessage(chatId)
                     messageViewModel.getMessageList().observe(this) { list ->
                         if (list != null) {
-                            adapter.submitList(list)
+                            val sortedList = list.sortedBy { it.time }
+                            adapter.submitList(sortedList)
                             chatViewModel.retrieveMemberList(chatId)
                             chatViewModel.getMemberList().observe(this) { members ->
                                 adapter.submitUser(members)

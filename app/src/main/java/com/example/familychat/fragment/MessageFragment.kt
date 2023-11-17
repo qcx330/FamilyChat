@@ -69,7 +69,8 @@ class MessageFragment : Fragment() {
         chatViewModel.retrieveUserChat()
         chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
             chatRoom ->if (chatRoom != null) {
-            adapter.submitList(chatRoom)
+            val sortedList = chatRoom.sortedByDescending { it.timestamp }
+            adapter.submitList(sortedList)
             tvMessage.visibility = View.GONE
         }
             else {

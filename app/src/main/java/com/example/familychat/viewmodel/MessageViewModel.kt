@@ -52,7 +52,7 @@ class MessageViewModel : ViewModel() {
         val currentList = messageList.value.orEmpty().toMutableList()
         if (messageId != null) {
             val chatMessage = Message(currentUserId, message, System.currentTimeMillis(), MessageType.TEXT)
-            chatRef.child(chatId).child("message")
+            chatRef.child("FamilyChat").child(chatId).child("message")
                 .child(messageId).setValue(chatMessage)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
