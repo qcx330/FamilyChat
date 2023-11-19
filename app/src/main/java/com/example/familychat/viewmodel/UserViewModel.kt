@@ -95,22 +95,6 @@ class UserViewModel (): ViewModel() {
 
         if (userId != null) {
             userRef.child(userId).child("avatar").setValue(downloadUrl)
-
-//        chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (childSnapshot in snapshot.children) {
-//                    val membersSnapshot = childSnapshot.child("member")
-//                    if (membersSnapshot.hasChild(userId)) {
-//                        val user = membersSnapshot.child(userId)
-//                        user.child("avatar").ref.setValue(downloadUrl)
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                // Handle onCancelled event
-//            }
-//        })
         }
     }
     fun getCurrentFamily() {
