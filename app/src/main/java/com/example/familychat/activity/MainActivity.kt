@@ -1,5 +1,6 @@
 package com.example.familychat.activity
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,6 +11,7 @@ import com.example.familychat.R
 import com.example.familychat.fragment.FamilyFragment
 import com.example.familychat.fragment.MessageFragment
 import com.example.familychat.fragment.ProfileFragment
+import com.example.familychat.notification.FirebaseService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -24,9 +26,20 @@ class MainActivity : AppCompatActivity() {
     var token :String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Thread.sleep(3000)
         installSplashScreen()
+        Thread.sleep(1000)
         setContentView(R.layout.activity_main)
+
+        FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener() { task ->
+            if (task.isSuccessful) {
+                FirebaseService.token = task.result
+                Log.i("fcmToken", task.result)
+            }
+        }
+            .addOnFailureListener {
+                Log.e("Error get fcmToken", it.message.toString())
+            }
 
         bottomnav = findViewById(R.id.bottomNav)
         auth = FirebaseAuth.getInstance()
@@ -50,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         replaceFragment(MessageFragment())
+
     }
     private fun replaceFragment(fragment:Fragment){
         supportFragmentManager.beginTransaction()

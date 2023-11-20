@@ -11,11 +11,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.adapter.MessageAdapter
 import com.example.familychat.databinding.ActivityChatBinding
+import com.example.familychat.model.NotificationData
+import com.example.familychat.model.PushNotification
 import com.example.familychat.model.User
+import com.example.familychat.notification.RetrofitInstance
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.MessageViewModel
 import com.example.familychat.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
@@ -26,6 +33,7 @@ class ChatActivity : AppCompatActivity() {
     lateinit var currentChat :String
     lateinit var currentFamily :String
     private val auth = FirebaseAuth.getInstance()
+    var topic = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,11 +118,20 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
         binding.btnSend.setOnClickListener() {
+            val text = binding.edtText.text.toString()
             if (currentFamily == chatId)
-                messageViewModel.sendFamilyMessage(binding.edtText.text.toString(), chatId)
-            else messageViewModel.sendUserMessage(binding.edtText.text.toString(), chatId)
+                messageViewModel.sendFamilyMessage(text, chatId)
+            else messageViewModel.sendUserMessage(text, chatId)
             binding.edtText.text.clear()
             adapter.notifyDataSetChanged()
+            topic = "/topics/${auth.currentUser!!.uid}"
+            userViewModel.getCurrentUser().observe(this){
+                user->PushNotification(
+                NotificationData( user.name ,text),
+                topic).also {
+                sendNotification(it)
+            }
+            }
         }
         binding.btnAttach.setOnClickListener(){
             val intent = Intent(Intent.ACTION_PICK)
@@ -131,5 +148,17 @@ class ChatActivity : AppCompatActivity() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch{
+        try{
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d("TAG", "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e("TAG", response.errorBody()!!.string())
+            }
+        }catch(e:Exception) {
+            Log.e("Send notification fail", e.message.toString())
+        }
     }
 }

@@ -29,10 +29,7 @@ class UserViewModel (): ViewModel() {
         }
     })
 
-    private val currentUserLiveData = MutableLiveData<User>()
-
-    val currentUser: LiveData<User>
-        get() = currentUserLiveData
+    val currentUser = MutableLiveData<User>()
 
     //Firebase
     private val storageReference = FirebaseStorage.getInstance().reference
@@ -45,6 +42,9 @@ class UserViewModel (): ViewModel() {
         userList.value = mutableListOf()
         loadCurrentUser()
     }
+    fun getCurrentUser():LiveData<User>{
+        return currentUser
+    }
     fun getUser():LiveData<User>{
         return user
     }
@@ -55,14 +55,14 @@ class UserViewModel (): ViewModel() {
         return currentFamilyId
     }
     private fun loadCurrentUser() {
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            val userId = currentUser.uid
+        val current = auth.currentUser
+        if (current != null) {
+            val userId = current.uid
 
             userRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val user = dataSnapshot.getValue(User::class.java)
-                    user?.let { currentUserLiveData.value = it }
+                    user?.let { currentUser.value = it }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
