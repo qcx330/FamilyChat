@@ -56,7 +56,7 @@ class ChatActivity : AppCompatActivity() {
                             Log.d("chatroomName", it.roomName!!)
                         }
                     }
-//                    binding.tvName.text = "Family"
+                    binding.tvName.text = "Family"
                     messageViewModel.retrieveFamilyMessage(chatId)
                     messageViewModel.getMessageList().observe(this) { list ->
                         if (list != null) {

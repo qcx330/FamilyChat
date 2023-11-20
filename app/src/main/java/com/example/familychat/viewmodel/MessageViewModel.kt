@@ -77,6 +77,7 @@ class MessageViewModel : ViewModel() {
                     }
                     messageList.value = messages
                     adapter.submitList(messages)
+                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -96,6 +97,7 @@ class MessageViewModel : ViewModel() {
                     }
                     messageList.value = messages
                     adapter.submitList(messages)
+                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
