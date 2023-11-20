@@ -1,5 +1,6 @@
 package com.example.familychat.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -68,16 +69,10 @@ class ChatActivity : AppCompatActivity() {
                     messageViewModel.retrieveFamilyMessage(chatId)
                     messageViewModel.getMessageList().observe(this) { list ->
                         if (list != null) {
-                            userViewModel.getUsersInFamily(familyId)
-                            userViewModel.getUserList().observe(this) { members ->
-                                if (members.isNotEmpty() && list.isNotEmpty()) {
-                                    Log.d("members", members.toString())
-                                    val sortedList = list.sortedBy { it.time }
-                                    adapter.submitList(sortedList)
-                                    adapter.submitUser(members)
-                                    adapter.notifyDataSetChanged()
-                                }
-                            }
+
+                            val sortedList = list.sortedBy { it.time }
+                            adapter.submitList(sortedList)
+                            adapter.notifyDataSetChanged()
                         } else Log.d("Chat list", "null")
                     }
                 } else {
@@ -102,11 +97,7 @@ class ChatActivity : AppCompatActivity() {
                         if (list != null) {
                             val sortedList = list.sortedBy { it.time }
                             adapter.submitList(sortedList)
-                            chatViewModel.retrieveMemberList(chatId)
-                            chatViewModel.getMemberList().observe(this) { members ->
-                                adapter.submitUser(members)
-                                adapter.notifyDataSetChanged()
-                            }
+                            adapter.notifyDataSetChanged()
                         } else Log.d("Chat list", "null")
                     }
                 }

@@ -18,11 +18,16 @@ import com.example.familychat.model.Message
 import com.example.familychat.model.MessageType
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.makeramen.roundedimageview.RoundedImageView
 
 class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
     private var messList: List<Message> = emptyList()
     private var userList: List<User> = emptyList()
+    private val userRef = FirebaseDatabase.getInstance().getReference("User")
 
     private val text_received_item = 0
     private val image_received_item = 1
@@ -100,16 +105,25 @@ class MessageAdapter: RecyclerView.Adapter<ViewHolder>() {
             viewHolder.tvTime.text = Utils.formatTimestamp(currentMessage.time!!)
         }else{
             val viewHolder = holder as ReceiveViewHolder
-            Log.d("Userlistadapter", userList.toString())
-            val sender = userList.firstOrNull { it.id == currentMessage.sender } as User
-            Log.d("sender", sender.toString())
-            if (currentMessage.type == MessageType.TEXT)
-                viewHolder.tvMessage.text = currentMessage.content
-            else Glide.with(holder.itemView).load(currentMessage.content).into(holder.imgMess)
-            viewHolder.tvName.text = sender.name
-            viewHolder.tvTime.text = Utils.formatTimestamp(currentMessage.time!!)
-            if (sender.avatar != "")
-                Glide.with(holder.itemView).load(sender.avatar).into(holder.imgAvatar)
+            userRef.child(currentMessage.sender!!).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val user = dataSnapshot.getValue(User::class.java)!!
+                    user.let {
+                        if (currentMessage.type == MessageType.TEXT)
+                            viewHolder.tvMessage.text = currentMessage.content
+                        else Glide.with(holder.itemView).load(currentMessage.content).into(holder.imgMess)
+                        viewHolder.tvName.text = user.name
+                        viewHolder.tvTime.text = Utils.formatTimestamp(currentMessage.time!!)
+                        if (user.avatar != "")
+                            Glide.with(holder.itemView).load(user.avatar).into(holder.imgAvatar)
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.d("get current user", databaseError.message)
+                }
+            })
+
         }
     }
 }
