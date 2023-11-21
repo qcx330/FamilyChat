@@ -7,14 +7,23 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.familychat.R
+import com.example.familychat.Utils
 import com.example.familychat.fragment.FamilyFragment
 import com.example.familychat.fragment.MessageFragment
 import com.example.familychat.fragment.ProfileFragment
+import com.example.familychat.model.MessageType
+import com.example.familychat.model.User
 import com.example.familychat.notification.FirebaseService
+import com.example.familychat.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -22,24 +31,22 @@ import com.google.firebase.messaging.FirebaseMessagingService
 class MainActivity : AppCompatActivity() {
     private lateinit var bottomnav : BottomNavigationView
     lateinit var auth : FirebaseAuth
-    lateinit var db : FirebaseDatabase
-    var token :String = ""
+    private lateinit var db : FirebaseDatabase
+    private val userRef = FirebaseDatabase.getInstance().getReference("User")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         Thread.sleep(1000)
         setContentView(R.layout.activity_main)
 
-        FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
-        FirebaseMessaging.getInstance().token.addOnCompleteListener() { task ->
-            if (task.isSuccessful) {
-                FirebaseService.token = task.result
-                Log.i("fcmToken", task.result)
-            }
+        if (intent.extras != null){
+            val chatId = intent.extras!!.getString("chatId")
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra("chatId", chatId)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
         }
-            .addOnFailureListener {
-                Log.e("Error get fcmToken", it.message.toString())
-            }
 
         bottomnav = findViewById(R.id.bottomNav)
         auth = FirebaseAuth.getInstance()
@@ -64,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         }
         replaceFragment(MessageFragment())
 
+        getFCMToken()
     }
     private fun replaceFragment(fragment:Fragment){
         supportFragmentManager.beginTransaction()
@@ -75,9 +83,10 @@ class MainActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(){
             task -> if (task.isSuccessful){
                 val token = task.result
+                Log.i("fcmToken", token)
                 val updates = hashMapOf<String, Any>("fcmToken" to token)
-
-                db.reference.child("User").child(auth.currentUser!!.uid).updateChildren(updates).addOnSuccessListener(){
+//                db.reference.child("User").child(auth.currentUser!!.uid).updateChildren(updates).addOnSuccessListener(){
+                db.reference.child("User").child(auth.currentUser!!.uid).child("token").setValue(token).addOnSuccessListener(){
                     Log.i("fcmToken", token)
                 }
                     .addOnFailureListener {
@@ -87,4 +96,5 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
 }

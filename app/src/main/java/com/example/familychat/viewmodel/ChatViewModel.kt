@@ -98,23 +98,6 @@ class ChatViewModel : ViewModel() {
 
         })
     }
-    fun getFamilyChat(familyId: String){
-        chatRef.child("FamilyChat")
-            .child(familyId).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val room = snapshot.getValue(ChatRoom::class.java)
-                    if (room != null) {
-                        chatRoom.postValue(room)
-                    } else {
-                        Log.e("getFamilyChat", "null")
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("getFamilyChat", "Error: ${error.message}")
-                }
-            })
-    }
     fun getChatRoom(chatRoomId:String){
         chatRef.child("UserChat")
             .child(chatRoomId).addListenerForSingleValueEvent(object : ValueEventListener {

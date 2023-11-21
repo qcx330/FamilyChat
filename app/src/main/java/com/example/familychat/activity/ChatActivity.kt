@@ -1,29 +1,30 @@
 package com.example.familychat.activity
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.adapter.MessageAdapter
 import com.example.familychat.databinding.ActivityChatBinding
-import com.example.familychat.model.NotificationData
-import com.example.familychat.model.PushNotification
 import com.example.familychat.model.User
-import com.example.familychat.notification.RetrofitInstance
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.MessageViewModel
 import com.example.familychat.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Headers
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
+
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
@@ -110,19 +111,25 @@ class ChatActivity : AppCompatActivity() {
         }
         binding.btnSend.setOnClickListener() {
             val text = binding.edtText.text.toString()
-            if (currentFamily == chatId)
+            if (currentFamily == chatId){
                 messageViewModel.sendFamilyMessage(text, chatId)
-            else messageViewModel.sendUserMessage(text, chatId)
+                userViewModel.getUserList().observe(this){
+                    userList -> if (userList.isNotEmpty()){
+                        sendNotification(text, userList, chatId)
+                    }
+                }
+            }
+            else {
+                messageViewModel.sendUserMessage(text, chatId)
+                chatViewModel.getMemberList().observe(this){
+                    userList -> if (userList.isNotEmpty()){
+                        sendNotification(text, userList, chatId)
+                    }
+                }
+            }
             binding.edtText.text.clear()
             adapter.notifyDataSetChanged()
-            topic = "/topics/${auth.currentUser!!.uid}"
-            userViewModel.getCurrentUser().observe(this){
-                user->PushNotification(
-                NotificationData( user.name ,text),
-                topic).also {
-                sendNotification(it)
-            }
-            }
+
         }
         binding.btnAttach.setOnClickListener(){
             val intent = Intent(Intent.ACTION_PICK)
@@ -133,23 +140,69 @@ class ChatActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             data?.data?.let{
-                if (currentFamily == currentChat)
+                if (currentFamily == currentChat) {
                     messageViewModel.sendImageFamilyChat(it, currentFamily)
-                else messageViewModel.sendImageUserChat(it, currentChat)
+                    userViewModel.getUserList().observe(this){
+                        userList -> if (userList.isNotEmpty()){
+                            sendNotification("sent a image", userList, currentFamily)
+                        }
+                    }
+                }
+                else {
+                    messageViewModel.sendImageUserChat(it, currentChat)
+                    chatViewModel.getMemberList().observe(this){
+                        userList -> if (userList.isNotEmpty()){
+                            sendNotification("sent a image", userList, currentChat)
+                        }
+                    }
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
-    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch{
-        try{
-            val response = RetrofitInstance.api.postNotification(notification)
-            if(response.isSuccessful) {
-                Log.d("TAG", "Response: ${Gson().toJson(response)}")
-            } else {
-                Log.e("TAG", response.errorBody()!!.string())
-            }
-        }catch(e:Exception) {
-            Log.e("Send notification fail", e.message.toString())
+    private fun sendNotification (message:String, userList: List<User>, chatId:String){
+        userViewModel.getCurrentUser().observe(this){
+            currentUser-> if (currentUser!= null){
+                for (user in userList)
+                try{
+                    val jsonObject = JSONObject()
+
+                    val notificationObj = JSONObject()
+                    notificationObj.put("title", currentUser.name)
+                    notificationObj.put("body", message)
+
+                    val dataObj = JSONObject()
+                    dataObj.put("roomId", chatId)
+
+                    jsonObject.put("notification", notificationObj)
+                    jsonObject.put("data", dataObj)
+                    jsonObject.put("to", user.token)
+
+                    callApi(jsonObject)
+                }catch (e : Exception){
+                    Log.e("send notification", e.message.toString())
+                }
         }
+        }
+    }
+    fun callApi(jsonObject: JSONObject){
+        val JSON = "application/json; charset=utf-8".toMediaType()
+        val client = OkHttpClient()
+        val url = "https://fcm.googleapis.com/fcm/send"
+        val headers = Headers.headersOf("Authorization", "Bearer AAAAk3sOXv0:APA91bF5JwkYRRVKPg-uwuBayOT9MuodeDWzZlnGECxYZs7913bEfe6vwB43FYxALmd5ZUc4udJme4zxB3JeO2juK59QRtNhHWsWCNJsoB3eQbt_4YuVSY8lp1YqDyizFZDwqoHRgKox")
+
+        val body = RequestBody.create(JSON, jsonObject.toString())
+
+        val request = Request.Builder().apply {
+            url(url)
+            method("POST", body)
+            headers(headers)
+        }.build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+            }
+            override fun onResponse(call: Call, response: Response) = throw IOException("Response $response")
+        })
     }
 }

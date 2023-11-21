@@ -20,6 +20,7 @@ import com.example.familychat.R
 import com.example.familychat.activity.SignInActivity
 import com.example.familychat.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.makeramen.roundedimageview.RoundedImageView
 
 class ProfileFragment : Fragment() {
@@ -67,8 +68,14 @@ class ProfileFragment : Fragment() {
             Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
         }
         btnLogout.setOnClickListener(){
-            auth.signOut()
-            startActivity(Intent(context, SignInActivity::class.java))
+            FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener(){
+                if (it.isSuccessful){
+                    auth.signOut()
+                    val intent = Intent(context, SignInActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+            }
         }
         btnChangePw.setOnClickListener(){
             val showDialog = ChangePwFragment()
