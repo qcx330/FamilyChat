@@ -1,9 +1,14 @@
 package com.example.familychat
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 class Utils {
     companion object{
@@ -24,6 +29,10 @@ class Utils {
             }
             return dateFormat.format(messageDate.time)
         }
+        val CHANNEL_ID = Random.nextInt().toString()
+        val CHANNEL_NAME = "FamilyChat"
+        val CHANNEL_DESCRIPTION = "Description"
+
     }
 
 }
