@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -20,7 +22,8 @@
             android:resource="@drawable/logo"/>
         <meta-data android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/start"/>
-
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBbVpXliY66PhKf6Odgdi19pBtLNQ6KrW0"/>
         <activity
             android:name=".activity.ChatActivity"
             android:exported="false"

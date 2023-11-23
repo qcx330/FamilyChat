@@ -7,5 +7,6 @@ data class Message(val sender: String?= "",
 }
 enum class MessageType {
     TEXT,
-    IMAGE
+    IMAGE,
+    LOCATION
 }

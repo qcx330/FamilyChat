@@ -27,23 +27,29 @@
             app:riv_corner_radius="10dp"
             android:scaleType="centerCrop"/>
 
-        <ImageView
-            android:id="@+id/imgMessage"
+        <com.google.android.gms.maps.MapView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            android:name="com.google.android.apps.maps"
+            android:id="@+id/map"
             android:layout_width="350dp"
-            android:src="@drawable/image_created_with_a_mobile_phone"
-            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_height="250dp"
+            map:uiMapToolbar="false"
+            map:cameraZoom="13"
+            map:mapType="normal"
+            map:liteMode="true"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/imgAvatar"
             android:background="@drawable/background_receive_message"
             android:padding="10dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"/>
+            />
         <TextView
             android:id="@+id/tvTime"
             android:text="hh:mm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/imgMessage"
-            android:layout_below="@+id/imgMessage"/>
+            android:layout_alignEnd="@+id/map"
+            android:layout_below="@+id/map"/>
     </RelativeLayout>
 </LinearLayout>

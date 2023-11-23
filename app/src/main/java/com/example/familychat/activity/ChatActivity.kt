@@ -169,6 +169,9 @@ class ChatActivity : AppCompatActivity() {
             intent.type = "image/*"
             startActivityForResult(intent, 1)
         }
+        binding.btnShareLocation.setOnClickListener(){
+
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -250,6 +253,9 @@ class ChatActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     val responseBody = response.body?.string()
+                    runOnUiThread {
+                        adapter.notifyDataSetChanged()
+                    }
                     Log.d("FCM Response", responseBody ?: "Empty response body")
                 } else {
                     Log.e("FCM Request Failed", response.body?.string() ?: "Empty response body")

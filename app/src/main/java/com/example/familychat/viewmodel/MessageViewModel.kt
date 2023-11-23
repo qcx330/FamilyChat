@@ -21,7 +21,8 @@ class MessageViewModel : ViewModel() {
     private val chatRef = FirebaseDatabase.getInstance().getReference("Chat")
     private val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
     private val storageReference = FirebaseStorage.getInstance().reference
-    val adapter= MessageAdapter()
+//    val adapter= MessageAdapter()
+
 
     fun getMessageList():LiveData<List<Message>>{
         return messageList
@@ -40,7 +41,7 @@ class MessageViewModel : ViewModel() {
                     chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                     currentList.add(chatMessage)
                     messageList.value = currentList
-                    adapter.submitList(currentList)
+//                    adapter.submitList(currentList)
                 } else Log.d("send message to user chat", task.exception.toString())
             }
 
@@ -60,7 +61,7 @@ class MessageViewModel : ViewModel() {
                         familyChatRef.child("timestamp").setValue(System.currentTimeMillis())
                         currentList.add(chatMessage)
                         messageList.value = currentList
-                        adapter.submitList(currentList)
+//                        adapter.submitList(currentList)
                     } else Log.d("send message to family chat", task.exception.toString())
                 }
 
@@ -76,8 +77,8 @@ class MessageViewModel : ViewModel() {
                         message?.let { messages.add(it) }
                     }
                     messageList.value = messages
-                    adapter.submitList(messages)
-                    adapter.notifyDataSetChanged()
+//                    adapter.submitList(messages)
+//                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -96,8 +97,8 @@ class MessageViewModel : ViewModel() {
                         message?.let { messages.add(it) }
                     }
                     messageList.value = messages
-                    adapter.submitList(messages)
-                    adapter.notifyDataSetChanged()
+//                    adapter.submitList(messages)
+//                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -146,8 +147,8 @@ class MessageViewModel : ViewModel() {
                                         chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                                         currentList.add(message)
                                         messageList.value = currentList
-                                        adapter.submitList(currentList)
-                                    } else Log.d("send message to user chat", task.exception.toString())
+//                                        adapter.submitList(currentList)
+                                    } else Log.d("send message to family chat", task.exception.toString())
                                 }
                         }
                         Log.d("DownloadUrl", downloadUrl)
@@ -160,7 +161,7 @@ class MessageViewModel : ViewModel() {
             }
         }
     }
-    fun saveImageDownloadUrlToDatabase(downloadUrl: String, chatId: String) {
+    private fun saveImageDownloadUrlToDatabase(downloadUrl: String, chatId: String) {
         val chatRoomRef = chatRef.child("UserChat").child(chatId)
         val messageId = chatRoomRef.child("message").push().key
         val currentList = messageList.value.orEmpty().toMutableList()
@@ -174,7 +175,7 @@ class MessageViewModel : ViewModel() {
                         chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                         currentList.add(message)
                         messageList.value = currentList
-                        adapter.submitList(currentList)
+//                        adapter.submitList(currentList)
                     } else Log.d("send message to user chat", task.exception.toString())
                 }
 

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.familychat.R
@@ -37,7 +36,6 @@ class ChatAdapter(val onItemClick: RvInterface) :
 
     fun submitList(newList: List<ChatRoom>) {
         chatRoomList = newList
-        notifyDataSetChanged()
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_chat, parent, false)
