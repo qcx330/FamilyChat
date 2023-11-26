@@ -1,14 +1,12 @@
 package com.example.familychat.adapter
 
-import android.content.IntentSender.SendIntentException
-import android.media.Image
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.net.toUri
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
@@ -29,9 +27,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.makeramen.roundedimageview.RoundedImageView
 
-class MessageAdapter : RecyclerView.Adapter<ViewHolder>() {
+class MessageAdapter : RecyclerView.Adapter<ViewHolder>()  {
     private var messList: List<Message> = emptyList()
-    private var userList: List<User> = emptyList()
     private val userRef = FirebaseDatabase.getInstance().getReference("User")
 
     private val text_received_item = 0
@@ -109,10 +106,6 @@ class MessageAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     fun submitList(newList: List<Message>) {
         messList = newList
-    }
-
-    fun submitUser(newList: List<User>) {
-        userList = newList
     }
 
     override fun getItemCount(): Int {
@@ -208,6 +201,29 @@ class MessageAdapter : RecyclerView.Adapter<ViewHolder>() {
                     }
                 })
 
+        }
+    }
+    fun updateList(newList: List<Message>) {
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int = messList.size
+            override fun getNewListSize(): Int = newList.size
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                diffCallback.areItemsTheSame(messList[oldItemPosition], newList[newItemPosition])
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                diffCallback.areContentsTheSame(messList[oldItemPosition], newList[newItemPosition])
+        })
+
+        messList= newList
+        diffResult.dispatchUpdatesTo(this)
+    }
+    private val diffCallback = object : DiffUtil.ItemCallback<Message>() {
+        override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+            return oldItem == newItem
         }
     }
 }

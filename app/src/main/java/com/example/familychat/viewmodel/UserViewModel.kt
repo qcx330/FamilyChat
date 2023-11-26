@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import kotlin.random.Random
 
 class UserViewModel (): ViewModel() {
     private val userList = MutableLiveData<List<User>>()
@@ -130,7 +131,8 @@ class UserViewModel (): ViewModel() {
                     if (it1.isSuccessful)
                         Log.d("Create family","Created successfully")
                 }
-                val message = Message(auth.currentUser!!.uid, "Welcome to family chat", System.currentTimeMillis(), MessageType.TEXT)
+                val messId = Random.nextInt()
+                val message = Message(messId.toString(),auth.currentUser!!.uid, "Welcome to family chat",System.currentTimeMillis(), MessageType.TEXT)
                 val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
                 val chatRoom = ChatRoom(familyId!!,ChatRoomType.FAMILY,"Family",message.content, message.time, mapMess)
                 chatRef.child("FamilyChat").child(familyId).setValue(chatRoom).addOnCompleteListener{

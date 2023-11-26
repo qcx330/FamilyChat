@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.childEvents
+import kotlin.random.Random
 
 class ChatViewModel : ViewModel() {
     private val chatRoomList = MutableLiveData<List<ChatRoom>>()
@@ -154,7 +155,8 @@ class ChatViewModel : ViewModel() {
         val chatId = "$currentUserId-$userId"
         val newChatRef = chatRef.child("UserChat")
         val members = listOf(currentUserId, userId)
-        val message = Message(currentUserId, "Hello", System.currentTimeMillis(), MessageType.TEXT)
+        val messId = Random.nextInt()
+        val message = Message(messId.toString(),currentUserId, "Hello", System.currentTimeMillis(), MessageType.TEXT)
         val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
         val room =
             ChatRoom(

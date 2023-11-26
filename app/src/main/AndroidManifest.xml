@@ -55,12 +55,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <receiver android:name=".notification.MyReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.messaging.NOTIFICATION_CREATED" />
-            </intent-filter>
-        </receiver>
+
     </application>
 
 </manifest>

@@ -32,7 +32,7 @@ class MessageViewModel : ViewModel() {
         val messageId = chatRoomRef.child("message").push().key
         val currentList = messageList.value.orEmpty().toMutableList()
         if (messageId != null) {
-            val chatMessage = Message(currentUserId, message, System.currentTimeMillis(), MessageType.TEXT)
+            val chatMessage = Message(messageId,currentUserId, message, System.currentTimeMillis(), MessageType.TEXT)
             chatRef.child("UserChat").child(chatId).child("message")
                 .child(messageId).setValue(chatMessage)
                 .addOnCompleteListener { task ->
@@ -52,7 +52,7 @@ class MessageViewModel : ViewModel() {
         val messageId = familyChatRef.child("message").push().key
         val currentList = messageList.value.orEmpty().toMutableList()
         if (messageId != null) {
-            val chatMessage = Message(currentUserId, message, System.currentTimeMillis(), MessageType.TEXT)
+            val chatMessage = Message(messageId,currentUserId, message, System.currentTimeMillis(), MessageType.TEXT)
             chatRef.child("FamilyChat").child(chatId).child("message")
                 .child(messageId).setValue(chatMessage)
                 .addOnCompleteListener { task ->
@@ -138,7 +138,7 @@ class MessageViewModel : ViewModel() {
                         val chatRoomRef = chatRef.child("FamilyChat").child(chatId)
                         val messageId = chatRoomRef.child("message").push().key
                         if (messageId != null) {
-                            val message = Message(currentUserId, downloadUrl, System.currentTimeMillis(), MessageType.IMAGE)
+                            val message = Message(messageId,currentUserId, downloadUrl, System.currentTimeMillis(), MessageType.IMAGE)
                             chatRoomRef.child("message")
                                 .child(messageId).setValue(message)
                                 .addOnCompleteListener { task ->
@@ -166,7 +166,7 @@ class MessageViewModel : ViewModel() {
         val messageId = chatRoomRef.child("message").push().key
         val currentList = messageList.value.orEmpty().toMutableList()
         if (messageId != null) {
-            val message = Message(currentUserId, downloadUrl, System.currentTimeMillis(), MessageType.IMAGE)
+            val message = Message(messageId,currentUserId, downloadUrl, System.currentTimeMillis(), MessageType.IMAGE)
             chatRef.child("UserChat").child(chatId).child("message")
                 .child(messageId).setValue(message)
                 .addOnCompleteListener { task ->

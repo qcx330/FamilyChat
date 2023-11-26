@@ -81,7 +81,7 @@ class ChatActivity : AppCompatActivity() {
                         if (list != null) {
 
                             val sortedList = list.sortedBy { it.time }
-                            adapter.submitList(sortedList)
+                            adapter.updateList(sortedList)
                             adapter.notifyDataSetChanged()
                             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                             if (lastVisibleItemPosition != RecyclerView.NO_POSITION) {
@@ -115,8 +115,7 @@ class ChatActivity : AppCompatActivity() {
                     messageViewModel.getMessageList().observe(this) { list ->
                         if (list != null) {
                             val sortedList = list.sortedBy { it.time }
-                            adapter.submitList(sortedList)
-                            adapter.notifyDataSetChanged()
+                            adapter.updateList(sortedList)
                             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                             if (lastVisibleItemPosition != RecyclerView.NO_POSITION) {
                                 messChat.smoothScrollToPosition(lastVisibleItemPosition)
@@ -253,9 +252,6 @@ class ChatActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     val responseBody = response.body?.string()
-                    runOnUiThread {
-                        adapter.notifyDataSetChanged()
-                    }
                     Log.d("FCM Response", responseBody ?: "Empty response body")
                 } else {
                     Log.e("FCM Request Failed", response.body?.string() ?: "Empty response body")
