@@ -42,7 +42,6 @@ class MessageViewModel : ViewModel() {
                     chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                     currentList.add(chatMessage)
                     messageList.value = currentList
-//                    adapter.submitList(currentList)
                 } else Log.d("send message to user chat", task.exception.toString())
             }
 
@@ -62,7 +61,6 @@ class MessageViewModel : ViewModel() {
                         familyChatRef.child("timestamp").setValue(System.currentTimeMillis())
                         currentList.add(chatMessage)
                         messageList.value = currentList
-//                        adapter.submitList(currentList)
                     } else Log.d("send message to family chat", task.exception.toString())
                 }
 
@@ -78,8 +76,6 @@ class MessageViewModel : ViewModel() {
                         message?.let { messages.add(it) }
                     }
                     messageList.value = messages
-//                    adapter.submitList(messages)
-//                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -89,50 +85,22 @@ class MessageViewModel : ViewModel() {
             })
     }
     fun retrieveUserMessage(chatId:String){
-//        chatRef.child("UserChat").child(chatId)
-//            .child("message").addListenerForSingleValueEvent(object : ValueEventListener{
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    val messages = mutableListOf<Message>()
-//                    for (messageSnapshot in snapshot.children) {
-//                        val message = messageSnapshot.getValue(Message::class.java)
-//                        message?.let { messages.add(it) }
-//                    }
-//                    messageList.value = messages
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    Log.d("retrieve user message", error.message)
-//                }
-//
-//            })
-        chatRef.child("UserChat").child(chatId).child("message")
-            .addChildEventListener(object :
-            ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val messages = mutableListOf<Message>()
-                val message = snapshot.getValue(Message::class.java)
-                message?.let {
-                    messages.add(it)
+        chatRef.child("UserChat").child(chatId)
+            .child("message").addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val messages = mutableListOf<Message>()
+                    for (messageSnapshot in snapshot.children) {
+                        val message = messageSnapshot.getValue(Message::class.java)
+                        message?.let { messages.add(it) }
+                    }
+                    messageList.value = messages
                 }
-                messageList.value = messages
-            }
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                // Handle changed messages if needed
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("retrieve user message", error.message)
+                }
 
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                // Handle removed messages if needed
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                // Handle moved messages if needed
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle errors
-            }
-        })
+            })
     }
     fun sendImageUserChat(imageUri: Uri, chatId:String){
         val imageName = "${System.currentTimeMillis()}.jpg"

@@ -55,7 +55,7 @@ class ChatViewModel : ViewModel() {
 
     fun retrieveMemberList(chatId: String) {
         chatRef.child("UserChat").child(chatId).child("member")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val userIds = mutableListOf<String>()
 
@@ -111,7 +111,7 @@ class ChatViewModel : ViewModel() {
 
     fun getChatRoom(chatRoomId: String) {
         chatRef.child("UserChat")
-            .child(chatRoomId).addListenerForSingleValueEvent(object : ValueEventListener {
+            .child(chatRoomId).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val room = snapshot.getValue(ChatRoom::class.java)
                     if (room != null) {
@@ -128,7 +128,7 @@ class ChatViewModel : ViewModel() {
     }
 
     fun getChatRoomWithUser(userId: String) {
-        chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
+        chatRef.child("UserChat").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (chatRoomSnapshot in snapshot.children) {
                     val members = chatRoomSnapshot.child("member").getValue(List::class.java)
@@ -185,7 +185,7 @@ class ChatViewModel : ViewModel() {
 
     fun retrieveUserChat() {
         chatRef.child("UserChat")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val chatRooms = chatRoomList.value.orEmpty().toMutableList()
                     for (childSnapshot in snapshot.children) {
@@ -194,8 +194,6 @@ class ChatViewModel : ViewModel() {
                             chatRooms.add(chatRoom)
                     }
                     chatRoomList.value = chatRooms
-//                    adapter.submitList(chatRooms)
-//                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
