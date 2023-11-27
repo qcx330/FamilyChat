@@ -9,6 +9,7 @@ import com.example.familychat.adapter.MessageAdapter
 import com.example.familychat.model.Message
 import com.example.familychat.model.MessageType
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -69,7 +70,7 @@ class MessageViewModel : ViewModel() {
     }
     fun retrieveFamilyMessage(chatId:String){
         chatRef.child("FamilyChat").child(chatId)
-            .child("message").addListenerForSingleValueEvent(object : ValueEventListener{
+            .child("message").addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val messages = mutableListOf<Message>()
                     for (messageSnapshot in snapshot.children) {
@@ -88,24 +89,50 @@ class MessageViewModel : ViewModel() {
             })
     }
     fun retrieveUserMessage(chatId:String){
-        chatRef.child("UserChat").child(chatId)
-            .child("message").addListenerForSingleValueEvent(object : ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val messages = mutableListOf<Message>()
-                    for (messageSnapshot in snapshot.children) {
-                        val message = messageSnapshot.getValue(Message::class.java)
-                        message?.let { messages.add(it) }
-                    }
-                    messageList.value = messages
-//                    adapter.submitList(messages)
-//                    adapter.notifyDataSetChanged()
+//        chatRef.child("UserChat").child(chatId)
+//            .child("message").addListenerForSingleValueEvent(object : ValueEventListener{
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    val messages = mutableListOf<Message>()
+//                    for (messageSnapshot in snapshot.children) {
+//                        val message = messageSnapshot.getValue(Message::class.java)
+//                        message?.let { messages.add(it) }
+//                    }
+//                    messageList.value = messages
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    Log.d("retrieve user message", error.message)
+//                }
+//
+//            })
+        chatRef.child("UserChat").child(chatId).child("message")
+            .addChildEventListener(object :
+            ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val messages = mutableListOf<Message>()
+                val message = snapshot.getValue(Message::class.java)
+                message?.let {
+                    messages.add(it)
                 }
+                messageList.value = messages
+            }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("retrieve user message", error.message)
-                }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                // Handle changed messages if needed
+            }
 
-            })
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                // Handle removed messages if needed
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // Handle moved messages if needed
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle errors
+            }
+        })
     }
     fun sendImageUserChat(imageUri: Uri, chatId:String){
         val imageName = "${System.currentTimeMillis()}.jpg"

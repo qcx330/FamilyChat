@@ -3,24 +3,23 @@ package com.example.familychat.activity
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.familychat.Utils
 import com.example.familychat.adapter.MessageAdapter
 import com.example.familychat.databinding.ActivityChatBinding
 import com.example.familychat.model.User
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.MessageViewModel
 import com.example.familychat.viewmodel.UserViewModel
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import okhttp3.Call
 import okhttp3.Callback
@@ -33,7 +32,6 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private lateinit var messChat: RecyclerView
@@ -44,12 +42,15 @@ class ChatActivity : AppCompatActivity() {
     lateinit var currentFamily: String
     private val auth = FirebaseAuth.getInstance()
     val adapter = MessageAdapter()
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val locationPermissionCode = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
@@ -169,7 +170,11 @@ class ChatActivity : AppCompatActivity() {
             startActivityForResult(intent, 1)
         }
         binding.btnShareLocation.setOnClickListener(){
-
+            if (hasLocationPermissions()) {
+                requestLocationUpdates()
+            } else {
+                requestLocationPermission()
+            }
         }
     }
 
@@ -259,5 +264,59 @@ class ChatActivity : AppCompatActivity() {
             }
 
         })
+    }
+    private fun hasLocationPermissions(): Boolean {
+        return (ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED)
+    }
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            locationPermissionCode
+        )
+    }
+    private fun requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+                        Toast.makeText(
+                            this,
+                            "Current Location: $latitude, $longitude",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Location not available",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        }
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == locationPermissionCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestLocationUpdates()
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
