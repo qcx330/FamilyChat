@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.familychat.R
 import com.example.familychat.Utils
 import com.example.familychat.model.ChatRoom
 import com.example.familychat.model.ChatRoomType
+import com.example.familychat.model.Message
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -35,7 +37,18 @@ class ChatAdapter(val onItemClick: RvInterface) :
     }
 
     fun submitList(newList: List<ChatRoom>) {
-        chatRoomList = newList
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int = chatRoomList.size
+            override fun getNewListSize(): Int = newList.size
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                diffCallback.areItemsTheSame(chatRoomList[oldItemPosition], newList[newItemPosition])
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                diffCallback.areContentsTheSame(chatRoomList[oldItemPosition], newList[newItemPosition])
+        })
+
+        chatRoomList= newList
+        diffResult.dispatchUpdatesTo(this)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_chat, parent, false)
@@ -103,4 +116,14 @@ class ChatAdapter(val onItemClick: RvInterface) :
             onItemClick.OnClickItem(position)
         }
     }
+    private val diffCallback = object : DiffUtil.ItemCallback<ChatRoom>() {
+        override fun areItemsTheSame(oldItem: ChatRoom, newItem: ChatRoom): Boolean {
+            return oldItem.roomId == newItem.roomId
+        }
+
+        override fun areContentsTheSame(oldItem: ChatRoom, newItem: ChatRoom): Boolean {
+            return oldItem == newItem
+        }
+    }
+
 }

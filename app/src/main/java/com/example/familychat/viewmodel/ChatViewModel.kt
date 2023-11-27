@@ -128,18 +128,21 @@ class ChatViewModel : ViewModel() {
     }
 
     fun getChatRoomWithUser(userId: String) {
-        chatRef.child("UserChat").addValueEventListener(object : ValueEventListener {
+        chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                for (chatRoomSnapshot in snapshot.children) {
-                    val members = chatRoomSnapshot.child("member").getValue(List::class.java)
-                    if (members != null && members.contains(currentUserId) && members.contains(userId)) {
-                        chatRoomId.postValue(chatRoomSnapshot.child("roomId").value.toString())
-                        Log.d("ChatroomId", chatRoomSnapshot.child("roomId").value.toString())
-                        return
-                    }
+                if (snapshot.child("$currentUserId-$userId").exists()){
+                    chatRoomId.postValue("$currentUserId-$userId")
+                    Log.d("ChatroomId", "$currentUserId-$userId")
+                    return
+                } else if (snapshot.child("$userId-$currentUserId").exists()){
+                    chatRoomId.postValue("$userId-$currentUserId")
+                    Log.d("ChatroomId", "$userId-$currentUserId")
+                    return
                 }
-                Log.d("ChatroomId", "Not found")
-                createChatRoom(userId)
+                else {
+                    Log.d("ChatroomId", "Not found")
+                    createChatRoom(userId)
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
