@@ -27,7 +27,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.makeramen.roundedimageview.RoundedImageView
 
-class MessageAdapter : RecyclerView.Adapter<ViewHolder>()  {
+class MessageAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolder>()  {
     private var messList: List<Message> = emptyList()
     private val userRef = FirebaseDatabase.getInstance().getReference("User")
 
@@ -43,6 +43,7 @@ class MessageAdapter : RecyclerView.Adapter<ViewHolder>()  {
         val tvTime = itemView.findViewById<TextView>(R.id.tvTime)
         val imgMess = itemView.findViewById<ImageView>(R.id.imgMessage)
         val map = itemView.findViewById<MapView>(R.id.map)
+        val tvLocation = itemView.findViewById<TextView>(R.id.tvLocation)
     }
 
     inner class ReceiveViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -52,6 +53,7 @@ class MessageAdapter : RecyclerView.Adapter<ViewHolder>()  {
         val tvTime = itemView.findViewById<TextView>(R.id.tvTime)
         val imgMess = itemView.findViewById<ImageView>(R.id.imgMessage)
         val map = itemView.findViewById<MapView>(R.id.map)
+        val tvLocation = itemView.findViewById<TextView>(R.id.tvLocation)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -114,6 +116,9 @@ class MessageAdapter : RecyclerView.Adapter<ViewHolder>()  {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentMessage = messList[position]
+        holder.itemView.setOnClickListener(){
+            onItemClick.OnClickItem(position)
+        }
         Log.d("current message", currentMessage.toString())
         if (holder.javaClass == SentViewHolder::class.java) {
             val viewHolder = holder as SentViewHolder
@@ -122,31 +127,20 @@ class MessageAdapter : RecyclerView.Adapter<ViewHolder>()  {
             else if (currentMessage.type == MessageType.IMAGE)
                 Glide.with(holder.itemView).load(currentMessage.content).into(holder.imgMess)
             else {
+                val (latitude, longitude, detail) = currentMessage.content!!.split(",")
+                viewHolder.tvLocation.text = detail
+                val latitudeDouble = latitude.toDouble()
+                val longitudeDouble = longitude.toDouble()
                 if (viewHolder.map != null) {
                     // Initialise the MapView
-                    viewHolder.map.onCreate(null)
-                    viewHolder.map.onResume()
-                    // Set the map ready callback to receive the GoogleMap object
-//                    viewHolder.map.getMapAsync { googleMap ->
-//                        googleMap.moveCamera(
-//                            CameraUpdateFactory.newLatLngZoom(
-//                                LatLng(
-//                                    chat.getLat(),
-//                                    chat.getLon()
-//                                ), 13.0F
-//                            )
-//                        )
-//                        googleMap.addMarker(
-//                            MarkerOptions().position(
-//                                LatLng(
-//                                    chat.getLat(),
-//                                    chat.getLon()
-//                                )
-//                            )
-//                        )
-//                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL)
-//                        googleMap.getUiSettings().setAllGesturesEnabled(false)
-//                    }
+                    viewHolder.map.onCreate(null);
+                    viewHolder.map.onResume();
+                    viewHolder.map.getMapAsync { googleMap ->
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitudeDouble, longitudeDouble), 13.0F))
+                        googleMap.addMarker(MarkerOptions().position(LatLng(latitudeDouble, longitudeDouble)))
+                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL)
+                        googleMap.getUiSettings().setAllGesturesEnabled(false)
+                    }
                 }
             }
             viewHolder.tvTime.text = Utils.formatTimestamp(currentMessage.time!!)
@@ -163,30 +157,20 @@ class MessageAdapter : RecyclerView.Adapter<ViewHolder>()  {
                                 Glide.with(holder.itemView).load(currentMessage.content)
                                     .into(holder.imgMess)
                             else {
+                                val (latitude, longitude, detail) = currentMessage.content!!.split(",")
+                                viewHolder.tvLocation.text = detail
+                                val latitudeDouble = latitude.toDouble()
+                                val longitudeDouble = longitude.toDouble()
                                 if (viewHolder.map != null) {
                                     // Initialise the MapView
                                     viewHolder.map.onCreate(null);
                                     viewHolder.map.onResume();
-//                                    viewHolder.map.getMapAsync { googleMap ->
-//                                        googleMap.moveCamera(
-//                                            CameraUpdateFactory.newLatLngZoom(
-//                                                LatLng(
-//                                                    chat.getLat(),
-//                                                    chat.getLon()
-//                                                ), 13.0F
-//                                            )
-//                                        )
-//                                        googleMap.addMarker(
-//                                            MarkerOptions().position(
-//                                                LatLng(
-//                                                    chat.getLat(),
-//                                                    chat.getLon()
-//                                                )
-//                                            )
-//                                        )
-//                                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL)
-//                                        googleMap.getUiSettings().setAllGesturesEnabled(false)
-//                                    }
+                                    viewHolder.map.getMapAsync { googleMap ->
+                                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitudeDouble, longitudeDouble), 13.0F))
+                                        googleMap.addMarker(MarkerOptions().position(LatLng(latitudeDouble, longitudeDouble)))
+                                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL)
+                                        googleMap.getUiSettings().setAllGesturesEnabled(false)
+                                    }
                                 }
                             }
                             viewHolder.tvName.text = user.name

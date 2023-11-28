@@ -5,6 +5,5 @@ data class User(val name: String="",
             val avatar:String? = "",
             val id:String? = "",
             val familyId :String? ="",
-            val token:String? = "",
-            val location: Location? = null) {
+            val token:String? = "") {
 }

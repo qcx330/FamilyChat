@@ -3,6 +3,9 @@ package com.example.familychat.activity
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -13,7 +16,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familychat.adapter.MessageAdapter
+import com.example.familychat.adapter.RvInterface
 import com.example.familychat.databinding.ActivityChatBinding
+import com.example.familychat.model.MessageType
 import com.example.familychat.model.User
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.MessageViewModel
@@ -31,6 +36,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.util.Locale
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
@@ -41,7 +47,6 @@ class ChatActivity : AppCompatActivity() {
     lateinit var currentChat: String
     lateinit var currentFamily: String
     private val auth = FirebaseAuth.getInstance()
-    val adapter = MessageAdapter()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locationPermissionCode = 1
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +66,27 @@ class ChatActivity : AppCompatActivity() {
         messChat = binding.messageChat
         messChat.layoutManager = LinearLayoutManager(this)
         val layoutManager = messChat.layoutManager as LinearLayoutManager
+
+        val adapter = MessageAdapter(object:RvInterface{
+            override fun OnClickItem(pos: Int) {
+                if (currentChat == currentFamily){
+                    messageViewModel.retrieveFamilyMessage(currentChat)
+                    messageViewModel.getMessageList().observe(this@ChatActivity){
+                        if (it.isNotEmpty()){
+                            if(it[pos].type == MessageType.LOCATION){
+                                val (latitude, longitude, detail) = it[pos].content!!.split(",")
+                                val latitudeDouble = latitude.toDouble()
+                                val longitudeDouble = longitude.toDouble()
+                                val mapUri = Uri.parse("https://maps.google.com/maps/search/$latitudeDouble,$longitudeDouble")
+                                val intent = Intent(Intent.ACTION_VIEW, mapUri)
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                }
+            }
+
+        })
 
         messChat.adapter = adapter
 
@@ -288,13 +314,27 @@ class ChatActivity : AppCompatActivity() {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->
                     if (location != null) {
-                        val latitude = location.latitude
-                        val longitude = location.longitude
-                        Toast.makeText(
-                            this,
-                            "Current Location: $latitude, $longitude",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val geocoder = Geocoder(this, Locale.getDefault())
+
+                        try {
+                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+
+                            if (addresses!!.isNotEmpty()) {
+                                val address = addresses[0]
+
+                                val city = address.locality
+                                val state = address.adminArea
+                                val country = address.countryName
+                                val postalCode = address.postalCode
+                                val locationDetails = "$city, $state, $country, $postalCode"
+                                val currentLocation = "${location.latitude},${location.longitude},${locationDetails}"
+                                if (currentChat == currentFamily)
+                                    messageViewModel.sendLocation(currentLocation, currentChat, "FamilyChat")
+                                else messageViewModel.sendLocation(currentLocation, currentChat, "UserChat")
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
                     } else {
                         Toast.makeText(
                             this,

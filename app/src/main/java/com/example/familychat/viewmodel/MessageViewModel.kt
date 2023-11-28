@@ -176,4 +176,23 @@ class MessageViewModel : ViewModel() {
 
         }
     }
+    fun sendLocation(location:String, chatId:String, typeChat:String){
+        val chatRoomRef = chatRef.child(typeChat).child(chatId)
+        val messageId = chatRoomRef.child("message").push().key
+        val currentList = messageList.value.orEmpty().toMutableList()
+        if (messageId != null) {
+            val chatMessage = Message(messageId,currentUserId, location, System.currentTimeMillis(), MessageType.LOCATION)
+            chatRef.child("UserChat").child(chatId).child("message")
+                .child(messageId).setValue(chatMessage)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        chatRoomRef.child("lastMessage").setValue(location)
+                        chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
+                        currentList.add(chatMessage)
+                        messageList.value = currentList
+                    } else Log.d("send location to user chat", task.exception.toString())
+                }
+
+        }
+    }
 }
