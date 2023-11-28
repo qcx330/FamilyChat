@@ -102,7 +102,7 @@ class MessageAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHo
         } else {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_sent_location, parent, false)
-            return ReceiveViewHolder(view)
+            return SentViewHolder(view)
         }
     }
 
@@ -127,8 +127,9 @@ class MessageAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHo
             else if (currentMessage.type == MessageType.IMAGE)
                 Glide.with(holder.itemView).load(currentMessage.content).into(holder.imgMess)
             else {
-                val (latitude, longitude, detail) = currentMessage.content!!.split(",")
-                viewHolder.tvLocation.text = detail
+                val (latitude, longitude, city, state, country) = currentMessage.content!!.split(",")
+                if (city == "null") viewHolder.tvLocation.text = "$state, $country"
+                else viewHolder.tvLocation.text = "$city, $state, $country"
                 val latitudeDouble = latitude.toDouble()
                 val longitudeDouble = longitude.toDouble()
                 if (viewHolder.map != null) {
@@ -157,8 +158,9 @@ class MessageAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHo
                                 Glide.with(holder.itemView).load(currentMessage.content)
                                     .into(holder.imgMess)
                             else {
-                                val (latitude, longitude, detail) = currentMessage.content!!.split(",")
-                                viewHolder.tvLocation.text = detail
+                                val (latitude, longitude, city, state, country) = currentMessage.content!!.split(",")
+                                if (city == "null") viewHolder.tvLocation.text = "$state, $country"
+                                else viewHolder.tvLocation.text = "$city, $state, $country"
                                 val latitudeDouble = latitude.toDouble()
                                 val longitudeDouble = longitude.toDouble()
                                 if (viewHolder.map != null) {
