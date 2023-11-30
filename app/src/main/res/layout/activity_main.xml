@@ -28,5 +28,4 @@
         app:itemIconSize="35dp"
         app:labelVisibilityMode="unlabeled"
         app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

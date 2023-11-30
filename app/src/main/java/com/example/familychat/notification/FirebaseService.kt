@@ -34,12 +34,12 @@ class FirebaseService:FirebaseMessagingService() {
 //        token = newToken
 //    }
 //
-//    override fun onMessageReceived(message: RemoteMessage) {
+    override fun onMessageReceived(message: RemoteMessage) {
 //        super.onMessageReceived(message)
 //        val intent = Intent(this, MainActivity::class.java)
 //        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 //        val notificationId = Random.nextInt()
-//
+
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 //            createNotificationChannel(notificationManager)
 //        }
@@ -55,7 +55,7 @@ class FirebaseService:FirebaseMessagingService() {
 //            .build()
 //
 //        notificationManager.notify(notificationId,notification)
-//    }
+    }
 //    @RequiresApi(Build.VERSION_CODES.O)
 //    private fun createNotificationChannel(notificationManager: NotificationManager){
 //

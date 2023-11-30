@@ -13,6 +13,7 @@ import com.example.familychat.model.ChatRoomType
 import com.example.familychat.model.Message
 import com.example.familychat.model.MessageType
 import com.example.familychat.model.User
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -25,6 +26,7 @@ class UserViewModel (): ViewModel() {
     private val userList = MutableLiveData<List<User>>()
     val currentFamilyId = MutableLiveData<String?>()
     val user = MutableLiveData<User>()
+    val statusAdd = MutableLiveData<Boolean>()
     val adapter = UserAdapter(object :RvInterface{
         override fun OnClickItem(pos: Int) {
         }
@@ -42,6 +44,9 @@ class UserViewModel (): ViewModel() {
     init{
         userList.value = mutableListOf()
         loadCurrentUser()
+    }
+    fun getStatusAdd():LiveData<Boolean>{
+        return statusAdd
     }
     fun getCurrentUser():LiveData<User>{
         return currentUser
@@ -100,7 +105,7 @@ class UserViewModel (): ViewModel() {
     }
     fun getCurrentFamily() {
         userRef.child(auth.currentUser!!.uid).child("familyId")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val familyId = snapshot.getValue(String::class.java)
                     familyId?.let {
@@ -160,30 +165,49 @@ class UserViewModel (): ViewModel() {
     }
     fun addUser(userId:String, familyId: String) {
         val currentList = userList.value!!.toMutableList()
-        familyRef.child(familyId).child(userId).setValue(true).addOnCompleteListener {
-            if (it.isSuccessful) {
-                userRef.child(userId).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
-                    if (it1.isSuccessful) {
-                        val user = fetchDataUserById(userId)
-                        Log.d("add member", user.email)
-                        currentList.add(user)
-                        userList.value = currentList
-                        adapter.submitList(currentList)
-                        Log.d("Add Member", "Added successfully")
+        userRef.child(userId).child("familyId")
+            .addListenerForSingleValueEvent(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val famId = snapshot.getValue(String::class.java)
+                    if (famId != ""){
+                        familyRef.child(familyId).child(userId).setValue(true).addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                userRef.child(userId).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->
+                                    if (it1.isSuccessful) {
+                                        val user = fetchDataUserById(userId)
+                                        Log.d("add member", user.email)
+                                        currentList.add(user)
+                                        userList.value = currentList
+                                        adapter.submitList(currentList)
+                                        Log.d("Add Member", "Added successfully")
+                                        statusAdd.value = true
+                                    }
+                                    else{
+                                        statusAdd.value = false
+                                        Log.d("Add Member", it1.exception.toString())
+                                    }
+                                }
+                            }else{
+                                statusAdd.value = false
+                                Log.d("Add Member", it.exception.toString())
+                            }
+                        }
                     }
-                    else{
-                        Log.d("Add Member", it1.exception.toString())
+                    else {
+                        statusAdd.value = false
                     }
                 }
-            }else{
-                Log.d("Add Member", it.exception.toString())
-            }
-        }
+
+                override fun onCancelled(error: DatabaseError) {
+                    statusAdd.value = false
+                    Log.d("Add Member", error.toString())
+                }
+
+            })
     }
     fun getUsersInFamily(familyId:String) {
         val users = mutableListOf<User>()
-
-        familyRef.child(familyId).addListenerForSingleValueEvent(object : ValueEventListener {
+        familyRef.child(familyId).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val userIds = mutableListOf<String>()
 

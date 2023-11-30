@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             val chatId = intent.extras!!.getString("chatId")
             val intent = Intent(this, ChatActivity::class.java)
             intent.putExtra("chatId", chatId)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
 

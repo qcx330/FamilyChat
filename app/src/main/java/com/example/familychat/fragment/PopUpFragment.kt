@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.familychat.R
 import com.example.familychat.viewmodel.UserViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 
 class PopUpFragment : DialogFragment() {
@@ -35,10 +36,15 @@ class PopUpFragment : DialogFragment() {
             viewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
                     id -> if (id!= null){
                 viewModel.addUser(edtUserId.text.toString(), id)
+                viewModel.getStatusAdd().observe(viewLifecycleOwner){
+                    status -> if (status){
+                        dismiss()
+                    }
+                    else Snackbar.make(view, "User is already in another family", Snackbar.LENGTH_SHORT).view
+                }
             }
                 else Log.d("add member", "id null")
             }
-            dismiss()
         }
         return view
     }
