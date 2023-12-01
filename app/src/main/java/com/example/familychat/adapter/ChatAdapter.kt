@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.familychat.R
@@ -48,7 +49,31 @@ class ChatAdapter(val onItemClick: RvInterface) :
         })
 
         chatRoomList= newList
-        diffResult.dispatchUpdatesTo(this)
+        notifyPositionChanges(diffResult)
+    }
+
+    private fun notifyPositionChanges(diffResult: DiffUtil.DiffResult) {
+        val movedItems = mutableListOf<Pair<Int, Int>>()
+        diffResult.dispatchUpdatesTo(object : ListUpdateCallback {
+            override fun onInserted(position: Int, count: Int) {
+            }
+
+            override fun onRemoved(position: Int, count: Int) {
+            }
+
+            override fun onMoved(fromPosition: Int, toPosition: Int) {
+                movedItems.add(fromPosition to toPosition)
+            }
+
+            override fun onChanged(position: Int, count: Int, payload: Any?) {
+            }
+        })
+        movedItems.sortBy { (fromPosition, _) ->
+            chatRoomList[fromPosition].timestamp
+        }
+        movedItems.forEach { (fromPosition, toPosition) ->
+            notifyItemMoved(fromPosition, toPosition)
+        }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_chat, parent, false)

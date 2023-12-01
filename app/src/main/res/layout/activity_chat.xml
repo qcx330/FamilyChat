@@ -94,11 +94,14 @@
 
         <EditText
             android:id="@+id/edtText"
-            android:layout_width="290dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/btnAttach"
             android:textSize="20dp"
-            android:hint="Enter message here"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:hint="Enter message"
+            android:background="@drawable/edt_chat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/btnAttach"
             app:layout_constraintTop_toTopOf="parent" />
