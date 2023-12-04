@@ -169,7 +169,7 @@ class UserViewModel (): ViewModel() {
             .addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val famId = snapshot.getValue(String::class.java)
-                    if (famId != ""){
+                    if (famId == ""){
                         familyRef.child(familyId).child(userId).setValue(true).addOnCompleteListener {
                             if (it.isSuccessful) {
                                 userRef.child(userId).child("familyId").setValue(familyId).addOnCompleteListener{it1 ->

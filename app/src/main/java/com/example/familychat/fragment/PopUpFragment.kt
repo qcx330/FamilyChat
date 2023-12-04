@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
@@ -37,10 +38,10 @@ class PopUpFragment : DialogFragment() {
                     id -> if (id!= null){
                 viewModel.addUser(edtUserId.text.toString(), id)
                 viewModel.getStatusAdd().observe(viewLifecycleOwner){
-                    status -> if (status){
+                    status -> if (status==true){
                         dismiss()
                     }
-                    else Snackbar.make(view, "User is already in another family", Snackbar.LENGTH_SHORT).view
+                    else Toast.makeText(context, "User's already in another family", Toast.LENGTH_SHORT).show()
                 }
             }
                 else Log.d("add member", "id null")

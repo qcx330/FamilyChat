@@ -226,14 +226,14 @@ class ChatActivity : AppCompatActivity() {
                     messageViewModel.sendImageFamilyChat(it, currentFamily)
                     userViewModel.getUserList().observe(this) { userList ->
                         if (userList.isNotEmpty()) {
-                            sendNotification("sent a image", userList, currentFamily)
+                            sendNotification("sent an image", userList, currentFamily)
                         }
                     }
                 } else {
                     messageViewModel.sendImageUserChat(it, currentChat)
                     chatViewModel.getMemberList().observe(this) { userList ->
                         if (userList.isNotEmpty()) {
-                            sendNotification("sent a image", userList, currentChat)
+                            sendNotification("sent an image", userList, currentChat)
                         }
                     }
                 }

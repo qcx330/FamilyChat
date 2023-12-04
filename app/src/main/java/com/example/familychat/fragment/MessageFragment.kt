@@ -51,6 +51,7 @@ class MessageFragment : Fragment() {
                     Log.d("chat id intent", chats[pos].roomId!!)
                     val intent = Intent(context, ChatActivity::class.java)
                     intent.putExtra("id", chats[pos].roomId)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                 }else Log.d("chat id intent", "null")
 

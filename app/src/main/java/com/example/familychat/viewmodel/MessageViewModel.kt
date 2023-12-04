@@ -138,7 +138,7 @@ class MessageViewModel : ViewModel() {
                                 .child(messageId).setValue(message)
                                 .addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
-                                        chatRoomRef.child("lastMessage").setValue("sent a image")
+                                        chatRoomRef.child("lastMessage").setValue("sent an image")
                                         chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                                         currentList.add(message)
                                         messageList.value = currentList
@@ -166,7 +166,7 @@ class MessageViewModel : ViewModel() {
                 .child(messageId).setValue(message)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        chatRoomRef.child("lastMessage").setValue("sent a image")
+                        chatRoomRef.child("lastMessage").setValue("sent an image")
                         chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                         currentList.add(message)
                         messageList.value = currentList
