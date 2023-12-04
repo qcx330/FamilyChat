@@ -12,6 +12,7 @@ import com.example.familychat.model.Message
 import com.example.familychat.model.MessageType
 import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -93,12 +94,59 @@ class ChatViewModel : ViewModel() {
     }
 
     fun retrieveFamilyChat(familyId: String) {
+//        chatRef.child("FamilyChat").child(familyId)
+//            .addValueEventListener(object : ValueEventListener {
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    val roomList = chatRoomList.value.orEmpty().toMutableList()
+//                    val chatRoom = snapshot.getValue(ChatRoom::class.java)
+//                    chatRoom?.let { roomList.add(it) }
+//                    chatRoomList.value = roomList
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    Log.d("family chat", error.message)
+//                }
+//
+//            })
         chatRef.child("FamilyChat").child(familyId)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
+            .addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     val roomList = chatRoomList.value.orEmpty().toMutableList()
                     val chatRoom = snapshot.getValue(ChatRoom::class.java)
                     chatRoom?.let { roomList.add(it) }
+                    chatRoomList.value = roomList
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    // update the specific chat room item in the list
+                    val chatRoom = snapshot.getValue(ChatRoom::class.java)
+                    val roomList = chatRoomList.value.orEmpty().toMutableList()
+                    val index = roomList.indexOfFirst { it.roomId == chatRoom!!.roomId }
+                    if (index != -1) {
+                        roomList[index] = chatRoom!!
+                    }
+                    chatRoomList.value = roomList
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    val chatRoom = snapshot.getValue(ChatRoom::class.java)
+                    val roomList = chatRoomList.value.orEmpty().toMutableList()
+                    val index = roomList.indexOfFirst { it.roomId == chatRoom?.roomId }
+                    if (index != -1) {
+                        roomList.removeAt(index)
+                    }
+                    chatRoomList.value = roomList
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    // move the specific chat room item in the list
+                    val chatRoom = snapshot.getValue(ChatRoom::class.java)
+                    val roomList = chatRoomList.value.orEmpty().toMutableList()
+                    val index = roomList.indexOfFirst { it.roomId == chatRoom?.roomId }
+                    if (index != -1) {
+                        roomList.removeAt(index)
+                        roomList.add(index, chatRoom!!)
+                    }
                     chatRoomList.value = roomList
                 }
 

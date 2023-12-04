@@ -11,60 +11,34 @@ import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import com.example.familychat.R
 import com.example.familychat.activity.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random
 
 class FirebaseService:FirebaseMessagingService() {
-//    private val CHANNEL_ID = "my_notification_channel"
-//    companion object{
-//        var sharedPref:SharedPreferences? = null
-//        var token:String?
-//            get(){
-//                return sharedPref?.getString("token","")
-//            }
-//            set(value) {
-//                sharedPref?.edit()?.putString("token", value)?.apply()
-//            }
-//    }
-//
-//    override fun onNewToken(newToken: String) {
-//        super.onNewToken(newToken)
-//        token = newToken
-//    }
-//
     override fun onMessageReceived(message: RemoteMessage) {
-//        super.onMessageReceived(message)
-//        val intent = Intent(this, MainActivity::class.java)
-//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        val notificationId = Random.nextInt()
+        val title = message.notification?.title
+        val body = message.notification?.body
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//            createNotificationChannel(notificationManager)
-//        }
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//        val pendingIntent = PendingIntent.getActivity(this,0,intent,
-//            PendingIntent.FLAG_MUTABLE)
-//        val notification = NotificationCompat.Builder(this,CHANNEL_ID)
-//            .setContentTitle(message.data["title"])
-//            .setContentText(message.data["message"])
-//            .setSmallIcon(R.drawable.logo)
-//            .setAutoCancel(true)
-//            .setContentIntent(pendingIntent)
-//            .build()
-//
-//        notificationManager.notify(notificationId,notification)
+        sendNotification(title ?: "Title", body ?: "Body")
     }
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    private fun createNotificationChannel(notificationManager: NotificationManager){
-//
-//        val channelName = "ChannelFirebaseChat"
-//        val channel = NotificationChannel(CHANNEL_ID,channelName,IMPORTANCE_HIGH).apply {
-//            description="MY FIREBASE CHAT DESCRIPTION"
-//            enableLights(true)
-//            lightColor = Color.WHITE
-//        }
-//        notificationManager.createNotificationChannel(channel)
-//    }
+    private fun sendNotification(title: String, body: String) {
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+
+        val notificationBuilder = NotificationCompat.Builder(this)
+            .setSmallIcon(R.drawable.logo)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(0, notificationBuilder.build())
+    }
 }
