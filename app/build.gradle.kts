@@ -42,6 +42,9 @@ android {
 }
 
 dependencies {
+
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     implementation ("com.google.android.gms:play-services-maps:18.2.0")

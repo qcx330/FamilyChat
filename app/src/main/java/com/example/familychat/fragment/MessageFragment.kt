@@ -31,6 +31,7 @@ class MessageFragment : Fragment() {
     private lateinit var messageViewModel: MessageViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvMessage: TextView
+    private lateinit var adapter : ChatAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,7 +45,7 @@ class MessageFragment : Fragment() {
         recyclerView = view.findViewById(R.id.listMessage)
 
         tvMessage = view.findViewById(R.id.tvMessage)
-        val adapter = ChatAdapter(object : RvInterface{
+        adapter = ChatAdapter(object : RvInterface{
             override fun OnClickItem(pos: Int) {
                 chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
                         chats ->if (chats != null){
@@ -87,6 +88,12 @@ class MessageFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         // TODO: Use the ViewModel
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("messageFragment", "Resume")
+        adapter.notifyDataSetChanged()
     }
 
 }
