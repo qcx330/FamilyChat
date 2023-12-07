@@ -36,6 +36,9 @@ class ChatViewModel : ViewModel() {
         override fun OnClickItem(pos: Int) {
         }
 
+        override fun OnRemoveItem(pos: Int) {
+        }
+
     })
 
     fun getMemberList(): LiveData<List<User>> {

@@ -30,6 +30,9 @@ class UserViewModel (): ViewModel() {
     val adapter = UserAdapter(object :RvInterface{
         override fun OnClickItem(pos: Int) {
         }
+
+        override fun OnRemoveItem(pos: Int) {
+        }
     })
 
     val currentUser = MutableLiveData<User>()
@@ -236,5 +239,28 @@ class UserViewModel (): ViewModel() {
                 // Handle database error
             }
         })
+    }
+    fun removeUser(userId:String, familyId: String){
+        userRef.child(userId).child("familyId").setValue("").addOnCompleteListener {
+            if (it.isSuccessful) {
+                familyRef.child(familyId).child("member").child(userId).removeValue()
+                chatRef.child("UserChat").addListenerForSingleValueEvent(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (userChatSnap in snapshot.children){
+                            val id = userChatSnap.key
+                            if (id != null) {
+                                if (id.contains(userId)){
+                                    chatRef.child("UserChat").child(id).removeValue()
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+
+                })
+            }else Log.e("remove familyId in UserRef", it.exception.toString())
+        }
     }
 }

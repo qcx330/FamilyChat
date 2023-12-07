@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -11,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.familychat.R
-import com.example.familychat.model.User
 import com.example.familychat.fragment.ProfileFragment
+import com.example.familychat.model.User
 import com.google.firebase.auth.FirebaseAuth
 
 class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolder>() {
-    private var userList: List<User> = emptyList()
+    private var userList = mutableListOf<User>()
     private val current = 1
     private val others = 0
     val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
@@ -35,12 +36,12 @@ class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolde
         val imgAvatar = itemView.findViewById<ImageView>(R.id.imgAvatar)
         val btnView = itemView.findViewById<Button>(R.id.btnView)
         val btnMessage = itemView.findViewById<Button>(R.id.btnMessage)
+        val btnRemove = itemView.findViewById<ImageButton>(R.id.btnRemove)
         fun bind (user: User){
             tvName.text = user.name
             if (user.avatar != "")
                 Glide.with(itemView).load(user.avatar).into(imgAvatar)
         }
-
     }
     override fun getItemViewType(position: Int): Int {
         val user = userList[position]
@@ -49,7 +50,8 @@ class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolde
         else others
     }
     fun submitList(newList: List<User>) {
-        userList = newList
+        userList.clear()
+        userList.addAll(newList)
         notifyDataSetChanged()
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -63,11 +65,13 @@ class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolde
             return OthersViewHolder(view)
         }
     }
-
     override fun getItemCount(): Int {
         return userList.size
     }
-
+    fun removeItem(postion:Int){
+        userList.removeAt(postion)
+        notifyItemRemoved(postion)
+    }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = userList[position]
         if (holder.javaClass == CurrentViewHolder::class.java){
@@ -88,7 +92,14 @@ class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolde
             viewHolder.btnMessage.setOnClickListener(){
                 onItemClick.OnClickItem(position)
             }
+            viewHolder.btnRemove.setOnClickListener(){
+                onItemClick.OnRemoveItem(position)
+            }
         }
+    }
+    interface AdapterListener {
+        fun chatOnClick(position: Int)
+        fun removeOnClick(position: Int)
     }
 }
 

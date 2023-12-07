@@ -59,6 +59,10 @@ class MessageFragment : Fragment() {
                 }
 
             }
+
+            override fun OnRemoveItem(pos: Int) {
+                TODO("Not yet implemented")
+            }
         })
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)

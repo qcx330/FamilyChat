@@ -100,6 +100,10 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
 
+            override fun OnRemoveItem(pos: Int) {
+                TODO("Not yet implemented")
+            }
+
         })
 
         messChat.adapter = adapter

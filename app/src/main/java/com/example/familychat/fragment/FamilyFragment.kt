@@ -64,6 +64,21 @@ class FamilyFragment : Fragment() {
                     } else Log.e("intent user id", "null")
                 }
             }
+
+            override fun OnRemoveItem(pos: Int) {
+                userViewModel.getUserList().observe(viewLifecycleOwner){
+                    users->
+                    if (users.isNotEmpty()){
+                        userViewModel.getCurrentFamily()
+                        userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
+                            family->
+                                if (family != null) {
+                                    userViewModel.removeUser(users[pos].id!!, family)
+                                }
+                        }
+                    }
+                }
+            }
         })
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -99,29 +114,4 @@ class FamilyFragment : Fragment() {
 
         return view
     }
-
-    private fun setItemTouchHelper(){
-        ItemTouchHelper(object : ItemTouchHelper.Callback(){
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                return makeMovementFlags(0, ItemTouchHelper.LEFT)
-            }
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                TODO("Not yet implemented")
-            }
-
-        })
-    }
-
 }
