@@ -6,9 +6,13 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +23,8 @@ import com.bumptech.glide.Glide
 import com.example.familychat.R
 import com.example.familychat.activity.SignInActivity
 import com.example.familychat.viewmodel.UserViewModel
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.makeramen.roundedimageview.RoundedImageView
@@ -30,12 +36,14 @@ class ProfileFragment : Fragment() {
     }
 
     private lateinit var viewModel: UserViewModel
-    private lateinit var tvName: TextView
+    private lateinit var edtName: EditText
     private lateinit var tvEmail: TextView
     private lateinit var btnCopy: AppCompatButton
     private lateinit var btnLogout: AppCompatButton
     private lateinit var btnChangePw: AppCompatButton
     private lateinit var imgAvatar : RoundedImageView
+    private lateinit var btnChangeName: AppCompatButton
+
     private val auth = FirebaseAuth.getInstance()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,20 +52,38 @@ class ProfileFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         btnLogout = view.findViewById(R.id.btnLogout)
-        tvName = view.findViewById(R.id.tvName)
+        edtName = view.findViewById(R.id.edtName)
         tvEmail = view.findViewById(R.id.tvEmail)
         btnCopy = view.findViewById(R.id.btnCopy)
         btnChangePw = view.findViewById(R.id.btnChangePw)
         imgAvatar = view.findViewById(R.id.imgAvatar)
-
+        btnChangeName = view.findViewById(R.id.btnChangeName)
+        var name = ""
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             if (user != null) {
-                tvName.text = user.name
+                edtName.text = user.name.toEditable()
+                name = user.name
                 if (user.avatar != "")
                     Glide.with(this).load(user.avatar).into(imgAvatar)
             }
         }
+        edtName.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().equals(name))
+                    btnChangeName.visibility = View.GONE
+                else btnChangeName.visibility = View.VISIBLE
+            }
+        })
+        btnChangeName.setOnClickListener(){
+            viewModel.changeName(edtName.text.toString())
+            Snackbar.make(view, "Changed", Snackbar.LENGTH_SHORT).view
+        }
         tvEmail.text = auth.currentUser!!.email
         btnCopy.text = auth.currentUser!!.uid
         btnCopy.setOnClickListener(){
@@ -101,5 +127,6 @@ class ProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         // TODO: Use the ViewModel
     }
+    fun String.toEditable(): Editable =  Editable.Factory.getInstance().newEditable(this)
 
 }

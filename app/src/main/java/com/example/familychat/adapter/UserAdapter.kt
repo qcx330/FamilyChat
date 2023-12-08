@@ -94,6 +94,7 @@ class UserAdapter(val onItemClick: RvInterface) : RecyclerView.Adapter<ViewHolde
             }
             viewHolder.btnRemove.setOnClickListener(){
                 onItemClick.OnRemoveItem(position)
+                removeItem(position)
             }
         }
     }

@@ -98,12 +98,13 @@ class ChatViewModel : ViewModel() {
 
     fun retrieveFamilyChat(familyId: String) {
         chatRef.child("FamilyChat").child(familyId)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val roomList = chatRoomList.value.orEmpty().toMutableList()
                     val chatRoom = snapshot.getValue(ChatRoom::class.java)
                     chatRoom?.let { roomList.add(it) }
                     chatRoomList.value = roomList
+                    adapter.submitList(roomList)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -201,6 +202,7 @@ class ChatViewModel : ViewModel() {
                             chatRooms.add(chatRoom)
                     }
                     chatRoomList.value = chatRooms
+                    adapter.submitList(chatRooms)
                 }
 
                 override fun onCancelled(error: DatabaseError) {

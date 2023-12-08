@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.ProfileFragment"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <TextView
         android:textSize="40dp"
@@ -40,16 +39,28 @@
         android:textColor="@color/end"
         android:drawableEnd="@drawable/ic_copy"
         android:drawableTint="@color/end"/>
-    <TextView
-        android:layout_marginTop="5dp"
-        android:id="@+id/tvName"
+    <EditText
+        android:textAlignment="center"
+        android:id="@+id/edtName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="Name"
         android:textSize="30dp"
         android:textStyle="bold"
-        android:textColor="@color/end" />
+        android:textColor="@color/end"
+        android:background="@drawable/edt_rounded"
+        android:backgroundTint="#FDF6FE"
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_marginTop="10dp"
+        android:id="@+id/btnChangeName"
+        android:layout_gravity="center"
+        android:text="Save"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/end"
+        android:background="@drawable/button_rounded"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
     <TextView
         android:layout_marginTop="5dp"
         android:id="@+id/tvEmail"

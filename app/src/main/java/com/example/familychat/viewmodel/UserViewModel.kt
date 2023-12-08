@@ -263,4 +263,9 @@ class UserViewModel (): ViewModel() {
             }else Log.e("remove familyId in UserRef", it.exception.toString())
         }
     }
+    fun changeName(newName:String){
+        userRef.child(auth.currentUser!!.uid).child("name").setValue(newName).addOnSuccessListener {
+            Log.d("change name", it.toString())
+        }
+    }
 }
