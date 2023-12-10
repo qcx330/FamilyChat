@@ -98,13 +98,14 @@ class ChatViewModel : ViewModel() {
 
     fun retrieveFamilyChat(familyId: String) {
         chatRef.child("FamilyChat").child(familyId)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val roomList = chatRoomList.value.orEmpty().toMutableList()
                     val chatRoom = snapshot.getValue(ChatRoom::class.java)
                     chatRoom?.let { roomList.add(it) }
                     chatRoomList.value = roomList
                     adapter.submitList(roomList)
+                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {

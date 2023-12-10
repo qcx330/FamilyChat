@@ -108,7 +108,7 @@ class UserViewModel (): ViewModel() {
     }
     fun getCurrentFamily() {
         userRef.child(auth.currentUser!!.uid).child("familyId")
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val familyId = snapshot.getValue(String::class.java)
                     familyId?.let {
@@ -243,7 +243,7 @@ class UserViewModel (): ViewModel() {
     fun removeUser(userId:String, familyId: String){
         userRef.child(userId).child("familyId").setValue("").addOnCompleteListener {
             if (it.isSuccessful) {
-                familyRef.child(familyId).child("member").child(userId).removeValue()
+                familyRef.child(familyId).child(userId).removeValue()
                 chatRef.child("UserChat").addListenerForSingleValueEvent(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (userChatSnap in snapshot.children){

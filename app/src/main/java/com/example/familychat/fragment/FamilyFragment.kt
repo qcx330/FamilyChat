@@ -68,12 +68,13 @@ class FamilyFragment : Fragment() {
             override fun OnRemoveItem(pos: Int) {
                 userViewModel.getUserList().observe(viewLifecycleOwner){
                     users->
-                    if (users.isNotEmpty()){
+                    if (users.isNotEmpty() && pos in 0 until users.size){
                         userViewModel.getCurrentFamily()
                         userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
                             family->
                                 if (family != null) {
                                     userViewModel.removeUser(users[pos].id!!, family)
+                                    return@observe
                                 }
                         }
                     }
