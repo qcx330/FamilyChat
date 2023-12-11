@@ -58,6 +58,7 @@ class ProfileFragment : Fragment() {
         btnChangePw = view.findViewById(R.id.btnChangePw)
         imgAvatar = view.findViewById(R.id.imgAvatar)
         btnChangeName = view.findViewById(R.id.btnChangeName)
+        btnChangeName.visibility = View.GONE
         var name = ""
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             if (user != null) {
@@ -67,7 +68,6 @@ class ProfileFragment : Fragment() {
                     Glide.with(this).load(user.avatar).into(imgAvatar)
             }
         }
-        btnChangeName.visibility = View.GONE
         edtName.addTextChangedListener(object :TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
