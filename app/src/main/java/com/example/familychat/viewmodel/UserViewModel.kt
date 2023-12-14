@@ -264,8 +264,10 @@ class UserViewModel (): ViewModel() {
         }
     }
     fun changeName(newName:String){
-        userRef.child(auth.currentUser!!.uid).child("name").setValue(newName).addOnSuccessListener {
-            Log.d("change name", it.toString())
+        userRef.child(auth.currentUser!!.uid).child("name").setValue(newName).addOnCompleteListener(){
+            if (it.isSuccessful)
+                Log.d("Change name", "Changed")
+            else Log.e("Change name", it.exception.toString())
         }
     }
 }

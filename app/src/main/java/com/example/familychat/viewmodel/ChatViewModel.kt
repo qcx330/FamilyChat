@@ -17,8 +17,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.childEvents
 import kotlin.random.Random
+
 
 class ChatViewModel : ViewModel() {
     private val chatRoomList = MutableLiveData<List<ChatRoom>>()
@@ -111,7 +111,6 @@ class ChatViewModel : ViewModel() {
                 override fun onCancelled(error: DatabaseError) {
                     Log.d("family chat", error.message)
                 }
-
             })
     }
 

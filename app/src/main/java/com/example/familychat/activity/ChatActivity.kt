@@ -164,7 +164,7 @@ class ChatActivity : AppCompatActivity() {
                             if (lastVisibleItemPosition != RecyclerView.NO_POSITION) {
                                 messChat.smoothScrollToPosition(lastVisibleItemPosition)
                             } else {
-                                messChat.smoothScrollToPosition(adapter.itemCount - 1)
+                                messChat.smoothScrollToPosition(adapter.itemCount)
                             }
                         } else Log.d("Chat list", "null")
                     }

@@ -58,7 +58,7 @@ class ProfileFragment : Fragment() {
         btnChangePw = view.findViewById(R.id.btnChangePw)
         imgAvatar = view.findViewById(R.id.imgAvatar)
         btnChangeName = view.findViewById(R.id.btnChangeName)
-        btnChangeName.visibility = View.GONE
+//        btnChangeName.visibility = View.GONE
         var name = ""
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             if (user != null) {
@@ -66,24 +66,26 @@ class ProfileFragment : Fragment() {
                 name = user.name
                 if (user.avatar != "")
                     Glide.with(this).load(user.avatar).into(imgAvatar)
+                edtName.addTextChangedListener(object :TextWatcher{
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        if (s.toString().equals(name))
+                            btnChangeName.visibility = View.GONE
+                        else btnChangeName.visibility = View.VISIBLE
+                    }
+                })
             }
         }
-        edtName.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                if (s.toString().equals(name))
-                    btnChangeName.visibility = View.GONE
-                else btnChangeName.visibility = View.VISIBLE
-            }
-        })
         btnChangeName.setOnClickListener(){
             viewModel.changeName(edtName.text.toString())
-            Snackbar.make(view, "Changed", Snackbar.LENGTH_SHORT).view
+            Toast.makeText(context, "Changed", Toast.LENGTH_SHORT).show()
+            btnChangeName.visibility = View.GONE
         }
         tvEmail.text = auth.currentUser!!.email
         btnCopy.text = auth.currentUser!!.uid
