@@ -42,10 +42,10 @@ class MessageViewModel : ViewModel() {
                     chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                     currentList.add(chatMessage)
                     messageList.value = currentList
-                } else Log.d("send message to user chat", task.exception.toString())
+                } else Log.e("send message to user chat", task.exception.toString())
             }
 
-        }
+        }else Log.e("messageId text user", "null")
     }
     fun sendFamilyMessage(message: String, chatId:String) {
         val familyChatRef = chatRef.child("FamilyChat").child(chatId)
@@ -61,10 +61,10 @@ class MessageViewModel : ViewModel() {
                         familyChatRef.child("timestamp").setValue(System.currentTimeMillis())
                         currentList.add(chatMessage)
                         messageList.value = currentList
-                    } else Log.d("send message to family chat", task.exception.toString())
+                    } else Log.e("send message to family chat", task.exception.toString())
                 }
 
-        }
+        } else Log.e("messageId text family", "null")
     }
     fun retrieveFamilyMessage(chatId:String){
         chatRef.child("FamilyChat").child(chatId)
@@ -79,7 +79,7 @@ class MessageViewModel : ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.d("retrieve user message", error.message)
+                    Log.e("retrieve user message", error.message)
                 }
 
             })
@@ -97,7 +97,7 @@ class MessageViewModel : ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.d("retrieve user message", error.message)
+                    Log.e("retrieve user message", error.message)
                 }
 
             })
@@ -113,11 +113,11 @@ class MessageViewModel : ViewModel() {
                         saveImageDownloadUrlToDatabase(downloadUrl, chatId)
                         Log.d("DownloadUrl", downloadUrl)
                     } else {
-                        Log.d("Get download url", "Error getting download URL")
+                        Log.e("Get download url", downloadUrlTask.exception.toString())
                     }
                 }
             } else {
-                Log.d("Upload image","error uploading the image")
+                Log.e("Upload image",task.exception.toString())
             }
         }
     }
@@ -143,16 +143,15 @@ class MessageViewModel : ViewModel() {
                                         currentList.add(message)
                                         messageList.value = currentList
 //                                        adapter.submitList(currentList)
-                                    } else Log.d("send message to family chat", task.exception.toString())
+                                    } else Log.e("send message to family chat", task.exception.toString())
                                 }
-                        }
-                        Log.d("DownloadUrl", downloadUrl)
+                        } else Log.e("messageId image family", "null")
                     } else {
-                        Log.d("Get download url", "Error getting download URL")
+                        Log.e("Get download url", downloadUrlTask.exception.toString())
                     }
                 }
             } else {
-                Log.d("Upload image","error uploading the image")
+                Log.e("Upload image",task.exception.toString())
             }
         }
     }
@@ -171,10 +170,9 @@ class MessageViewModel : ViewModel() {
                         currentList.add(message)
                         messageList.value = currentList
 //                        adapter.submitList(currentList)
-                    } else Log.d("send message to user chat", task.exception.toString())
+                    } else Log.e("send message to user chat", task.exception.toString())
                 }
-
-        }
+        } else Log.e("messageId image user", "null")
     }
     fun sendLocation(location:String, chatId:String, typeChat:String){
         val chatRoomRef = chatRef.child(typeChat).child(chatId)
@@ -190,9 +188,12 @@ class MessageViewModel : ViewModel() {
                         chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                         currentList.add(chatMessage)
                         messageList.value = currentList
-                    } else Log.d("send location to user chat", task.exception.toString())
+                    } else Log.e("send location to user chat", task.exception.toString())
                 }
 
+        }
+        else {
+            Log.e("messageId location", "null")
         }
     }
 }

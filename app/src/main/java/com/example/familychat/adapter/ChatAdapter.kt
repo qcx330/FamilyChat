@@ -49,7 +49,7 @@ class ChatAdapter(val onItemClick: RvInterface) :
         })
 
         chatRoomList= newList
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -66,32 +65,33 @@ class ChatActivity : AppCompatActivity() {
         messChat.layoutManager = LinearLayoutManager(this)
         val layoutManager = messChat.layoutManager as LinearLayoutManager
 
-        val adapter = MessageAdapter(object:RvInterface{
+        val adapter = MessageAdapter(object : RvInterface {
             override fun OnClickItem(pos: Int) {
-                if (currentChat == currentFamily){
+                if (currentChat == currentFamily) {
                     messageViewModel.retrieveFamilyMessage(currentChat)
-                    messageViewModel.getMessageList().observe(this@ChatActivity){
-                        if (it.isNotEmpty()){
-                            if(it[pos].type == MessageType.LOCATION){
+                    messageViewModel.getMessageList().observe(this@ChatActivity) {
+                        if (it.isNotEmpty()) {
+                            if (it[pos].type == MessageType.LOCATION) {
                                 val (latitude, longitude, detail) = it[pos].content!!.split(",")
                                 val latitudeDouble = latitude.toDouble()
                                 val longitudeDouble = longitude.toDouble()
-                                val mapUri = Uri.parse("https://maps.google.com/maps/search/$latitudeDouble,$longitudeDouble")
+                                val mapUri =
+                                    Uri.parse("https://maps.google.com/maps/search/$latitudeDouble,$longitudeDouble")
                                 val intent = Intent(Intent.ACTION_VIEW, mapUri)
                                 startActivity(intent)
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     messageViewModel.retrieveUserMessage(currentChat)
-                    messageViewModel.getMessageList().observe(this@ChatActivity){
-                        if (it.isNotEmpty()){
-                            if(it[pos].type == MessageType.LOCATION){
+                    messageViewModel.getMessageList().observe(this@ChatActivity) {
+                        if (it.isNotEmpty()) {
+                            if (it[pos].type == MessageType.LOCATION) {
                                 val (latitude, longitude, detail) = it[pos].content!!.split(",")
                                 val latitudeDouble = latitude.toDouble()
                                 val longitudeDouble = longitude.toDouble()
-                                val mapUri = Uri.parse("https://maps.google.com/maps/search/$latitudeDouble,$longitudeDouble")
+                                val mapUri =
+                                    Uri.parse("https://maps.google.com/maps/search/$latitudeDouble,$longitudeDouble")
                                 val intent = Intent(Intent.ACTION_VIEW, mapUri)
                                 startActivity(intent)
                             }
@@ -101,9 +101,8 @@ class ChatActivity : AppCompatActivity() {
             }
 
             override fun OnRemoveItem(pos: Int) {
-                TODO("Not yet implemented")
-            }
 
+            }
         })
 
         messChat.adapter = adapter
@@ -127,7 +126,8 @@ class ChatActivity : AppCompatActivity() {
 
                             val sortedList = list.sortedBy { it.time }
                             adapter.updateList(sortedList)
-                            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                            val lastVisibleItemPosition =
+                                layoutManager.findLastVisibleItemPosition()
                             if (lastVisibleItemPosition != RecyclerView.NO_POSITION) {
                                 messChat.smoothScrollToPosition(lastVisibleItemPosition)
                             } else {
@@ -148,9 +148,9 @@ class ChatActivity : AppCompatActivity() {
                             Log.d("chatroomid", it.roomId!!)
                             Log.d("userId", userId!!)
                             Log.d("user", userViewModel.fetchDataUserById(userId).toString())
-                            val user = userViewModel.fetchDataUserById(userId)
-                            userViewModel.getUser().observe(this) { it ->
-                                it?.let { binding.tvName.text = it.name }
+                            userViewModel.fetchDataUserById(userId)
+                            userViewModel.getUser().observe(this) { user ->
+                                user?.let { binding.tvName.text = user.name }
                             }
 
                         } else Log.d("chatroomid", "null")
@@ -160,7 +160,8 @@ class ChatActivity : AppCompatActivity() {
                         if (list != null) {
                             val sortedList = list.sortedBy { it.time }
                             adapter.updateList(sortedList)
-                            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                            val lastVisibleItemPosition =
+                                layoutManager.findLastVisibleItemPosition()
                             if (lastVisibleItemPosition != RecyclerView.NO_POSITION) {
                                 messChat.smoothScrollToPosition(lastVisibleItemPosition)
                             } else {
@@ -213,7 +214,7 @@ class ChatActivity : AppCompatActivity() {
             startActivityForResult(intent, 1)
             adapter.notifyDataSetChanged()
         }
-        binding.btnShareLocation.setOnClickListener(){
+        binding.btnShareLocation.setOnClickListener() {
             if (hasLocationPermissions()) {
                 requestLocationUpdates()
             } else {
@@ -233,6 +234,7 @@ class ChatActivity : AppCompatActivity() {
                             sendNotification("sent an image", userList, currentFamily)
                         }
                     }
+
                 } else {
                     messageViewModel.sendImageUserChat(it, currentChat)
                     chatViewModel.getMemberList().observe(this) { userList ->
@@ -248,30 +250,26 @@ class ChatActivity : AppCompatActivity() {
 
     private fun sendNotification(message: String, userList: List<User>, chatId: String) {
         userViewModel.getCurrentUser().observe(this) { currentUser ->
-            if (currentUser != null) {
-                for (user in userList.filter { it.id!= currentUser.id }) {
-                        try {
-                            val jsonObject = JSONObject()
-                            val notificationObj = JSONObject()
-                            if (chatId == currentFamily)
-                            {
-                                notificationObj.put("title", "Family")
-                                notificationObj.put("body", "${currentUser.name}: $message")
-                            }
-                            else{
-                                notificationObj.put("title", currentUser.name)
-                                notificationObj.put("body", message)
-                            }
-                            val dataObj = JSONObject()
-                            dataObj.put("chatId", chatId)
-                            jsonObject.put("notification", notificationObj)
-                            jsonObject.put("data", dataObj)
-                            jsonObject.put("to", user.token)
-                            Log.d("send notification to", user.name)
-                            callApi(jsonObject)
-                        } catch (e: Exception) {
-                            Log.e("send notification", e.message.toString())
+            for (user in userList.filter { it.id != currentUser.id }) {
+                try {
+                    val jsonObject = JSONObject()
+                    val notificationObj = JSONObject()
+                    if (chatId == currentFamily) {
+                        notificationObj.put("title", "Family")
+                        notificationObj.put("body", "${currentUser.name}: $message")
+                    } else {
+                        notificationObj.put("title", currentUser.name)
+                        notificationObj.put("body", message)
                     }
+                    val dataObj = JSONObject()
+                    dataObj.put("chatId", chatId)
+                    jsonObject.put("notification", notificationObj)
+                    jsonObject.put("data", dataObj)
+                    jsonObject.put("to", user.token)
+                    Log.d("send notification to", user.name)
+                    callApi(jsonObject)
+                } catch (e: Exception) {
+                    Log.e("send notification", e.message.toString())
                 }
             }
         }
@@ -310,12 +308,14 @@ class ChatActivity : AppCompatActivity() {
 
         })
     }
+
     private fun hasLocationPermissions(): Boolean {
         return (ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED)
     }
+
     private fun requestLocationPermission() {
         ActivityCompat.requestPermissions(
             this,
@@ -323,6 +323,7 @@ class ChatActivity : AppCompatActivity() {
             locationPermissionCode
         )
     }
+
     private fun requestLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -336,7 +337,8 @@ class ChatActivity : AppCompatActivity() {
                         val geocoder = Geocoder(this, Locale.getDefault())
 
                         try {
-                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                            val addresses =
+                                geocoder.getFromLocation(location.latitude, location.longitude, 1)
 
                             if (addresses!!.isNotEmpty()) {
                                 val address = addresses[0]
@@ -345,20 +347,36 @@ class ChatActivity : AppCompatActivity() {
                                 val state = address.adminArea
                                 val country = address.countryName
                                 val locationDetails = "$city, $state, $country"
-                                val currentLocation = "${location.latitude},${location.longitude},${locationDetails}"
-                                if (currentChat == currentFamily){
-                                    messageViewModel.sendLocation(currentLocation, currentChat, "FamilyChat")
+                                val currentLocation =
+                                    "${location.latitude},${location.longitude},${locationDetails}"
+                                if (currentChat == currentFamily) {
+                                    messageViewModel.sendLocation(
+                                        currentLocation,
+                                        currentChat,
+                                        "FamilyChat"
+                                    )
                                     userViewModel.getUserList().observe(this) { userList ->
                                         if (userList.isNotEmpty()) {
-                                            sendNotification("sent a location", userList, currentFamily)
+                                            sendNotification(
+                                                "sent a location",
+                                                userList,
+                                                currentFamily
+                                            )
                                         }
                                     }
-                                }
-                                else{
-                                    messageViewModel.sendLocation(currentLocation, currentChat, "UserChat")
+                                } else {
+                                    messageViewModel.sendLocation(
+                                        currentLocation,
+                                        currentChat,
+                                        "UserChat"
+                                    )
                                     chatViewModel.getMemberList().observe(this) { userList ->
                                         if (userList.isNotEmpty()) {
-                                            sendNotification("sent a location", userList, currentChat)
+                                            sendNotification(
+                                                "sent a location",
+                                                userList,
+                                                currentChat
+                                            )
                                         }
                                     }
                                 }
@@ -376,6 +394,7 @@ class ChatActivity : AppCompatActivity() {
                 }
         }
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

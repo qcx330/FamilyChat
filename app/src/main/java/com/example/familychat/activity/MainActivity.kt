@@ -1,39 +1,24 @@
 package com.example.familychat.activity
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.bumptech.glide.Glide
 import com.example.familychat.R
-import com.example.familychat.Utils
 import com.example.familychat.fragment.FamilyFragment
 import com.example.familychat.fragment.MessageFragment
 import com.example.familychat.fragment.ProfileFragment
-import com.example.familychat.model.MessageType
-import com.example.familychat.model.User
-import com.example.familychat.notification.FirebaseService
-import com.example.familychat.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.FirebaseMessagingService
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var bottomnav : BottomNavigationView
+    private lateinit var bottomNav : BottomNavigationView
     lateinit var auth : FirebaseAuth
     private lateinit var db : FirebaseDatabase
-    private val userRef = FirebaseDatabase.getInstance().getReference("User")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,11 +35,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        bottomnav = findViewById(R.id.bottomNav)
+        bottomNav = findViewById(R.id.bottomNav)
         auth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance()
 
-        bottomnav.setOnItemSelectedListener { item ->
+        bottomNav.setOnItemSelectedListener { item ->
             when(item.itemId){
                 R.id.message ->{
                     replaceFragment(MessageFragment())
@@ -82,13 +67,11 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
     private fun getFCMToken(){
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(){
+        FirebaseMessaging.getInstance().token.addOnCompleteListener{
             task -> if (task.isSuccessful){
                 val token = task.result
                 Log.i("fcmToken", token)
-                val updates = hashMapOf<String, Any>("fcmToken" to token)
-//                db.reference.child("User").child(auth.currentUser!!.uid).updateChildren(updates).addOnSuccessListener(){
-                db.reference.child("User").child(auth.currentUser!!.uid).child("token").setValue(token).addOnSuccessListener(){
+                db.reference.child("User").child(auth.currentUser!!.uid).child("token").setValue(token).addOnSuccessListener{
                     Log.i("fcmToken", token)
                 }
                     .addOnFailureListener {

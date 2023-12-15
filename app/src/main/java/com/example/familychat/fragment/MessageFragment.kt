@@ -18,6 +18,7 @@ import com.example.familychat.adapter.RvInterface
 import com.example.familychat.viewmodel.ChatViewModel
 import com.example.familychat.viewmodel.MessageViewModel
 import com.example.familychat.viewmodel.UserViewModel
+import com.google.firebase.database.FirebaseDatabase
 
 class MessageFragment : Fragment() {
 
