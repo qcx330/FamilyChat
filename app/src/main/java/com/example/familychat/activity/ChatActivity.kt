@@ -95,7 +95,7 @@ class ChatActivity : AppCompatActivity() {
                                 val intent = Intent(Intent.ACTION_VIEW, mapUri)
                                 startActivity(intent)
                             }
-                        }
+                        } else Log.e("get message list", "null")
                     }
                 }
             }
@@ -114,10 +114,9 @@ class ChatActivity : AppCompatActivity() {
                 if (familyId == chatId) {
                     chatViewModel.retrieveFamilyChat(familyId)
                     chatViewModel.getChatRoom().observe(this) {
-                        if (it != null) {
-                            binding.tvName.text = it.roomName
-                            Log.d("chatroomName", it.roomName!!)
-                        }
+                        binding.tvName.text = it!!.roomName
+                        Log.d("chatroomName", it.roomName!!)
+
                     }
                     binding.tvName.text = "Family"
                     messageViewModel.retrieveFamilyMessage(chatId)
@@ -133,11 +132,7 @@ class ChatActivity : AppCompatActivity() {
                             } else {
                                 messChat.smoothScrollToPosition(adapter.itemCount - 1)
                             }
-//                            messChat.post {
-//                                val lastItemPosition = adapter.itemCount - 1
-//                                messChat.smoothScrollToPosition(lastItemPosition)
-//                            }
-                        } else Log.d("Chat list", "null")
+                        } else Log.e("Chat list", "null")
                     }
                 } else {
                     chatViewModel.getChatRoom(chatId)
@@ -153,7 +148,7 @@ class ChatActivity : AppCompatActivity() {
                                 user?.let { binding.tvName.text = user.name }
                             }
 
-                        } else Log.d("chatroomid", "null")
+                        } else Log.e("chatroomid", "null")
                     }
                     messageViewModel.retrieveUserMessage(chatId)
                     messageViewModel.getMessageList().observe(this) { list ->
@@ -167,11 +162,11 @@ class ChatActivity : AppCompatActivity() {
                             } else {
                                 messChat.smoothScrollToPosition(adapter.itemCount)
                             }
-                        } else Log.d("Chat list", "null")
+                        } else Log.e("Chat list", "null")
                     }
                 }
 
-            } else Log.d("getFamilyIdChat", "null")
+            } else Log.e("getFamilyIdChat", "null")
         }
 
         binding.btnBack.setOnClickListener() {
@@ -187,9 +182,9 @@ class ChatActivity : AppCompatActivity() {
                 }
                 userViewModel.getUsersInFamily(chatId)
                 userViewModel.getUserList().observe(this) { userList ->
-                    if (userList.isNotEmpty()) {
+                    if (userList.isNotEmpty())
                         sendNotification(text, userList, chatId)
-                    }
+                    else Log.e("send noti family", "family only have 1 member")
                 }
             } else {
                 messageViewModel.sendUserMessage(text, chatId)
@@ -199,9 +194,7 @@ class ChatActivity : AppCompatActivity() {
                 }
                 chatViewModel.retrieveMemberList(chatId)
                 chatViewModel.getMemberList().observe(this) { userList ->
-                    if (userList.isNotEmpty()) {
-                        sendNotification(text, userList, chatId)
-                    }
+                    sendNotification(text, userList, chatId)
                 }
             }
             binding.edtText.text.clear()
@@ -230,17 +223,15 @@ class ChatActivity : AppCompatActivity() {
                 if (currentFamily == currentChat) {
                     messageViewModel.sendImageFamilyChat(it, currentFamily)
                     userViewModel.getUserList().observe(this) { userList ->
-                        if (userList.isNotEmpty()) {
+                        if (userList.isNotEmpty())
                             sendNotification("sent an image", userList, currentFamily)
-                        }
+                        else Log.e("send noti family", "family only have 1 member")
                     }
 
                 } else {
                     messageViewModel.sendImageUserChat(it, currentChat)
                     chatViewModel.getMemberList().observe(this) { userList ->
-                        if (userList.isNotEmpty()) {
-                            sendNotification("sent an image", userList, currentChat)
-                        }
+                        sendNotification("sent an image", userList, currentChat)
                     }
                 }
             }
@@ -357,12 +348,9 @@ class ChatActivity : AppCompatActivity() {
                                     )
                                     userViewModel.getUserList().observe(this) { userList ->
                                         if (userList.isNotEmpty()) {
-                                            sendNotification(
-                                                "sent a location",
-                                                userList,
-                                                currentFamily
-                                            )
+                                            sendNotification("sent a location", userList, currentFamily)
                                         }
+                                        else Log.e("send noti family", "family only have 1 member")
                                     }
                                 } else {
                                     messageViewModel.sendLocation(
@@ -371,13 +359,7 @@ class ChatActivity : AppCompatActivity() {
                                         "UserChat"
                                     )
                                     chatViewModel.getMemberList().observe(this) { userList ->
-                                        if (userList.isNotEmpty()) {
-                                            sendNotification(
-                                                "sent a location",
-                                                userList,
-                                                currentChat
-                                            )
-                                        }
+                                            sendNotification("sent a location", userList, currentChat)
                                     }
                                 }
                             }

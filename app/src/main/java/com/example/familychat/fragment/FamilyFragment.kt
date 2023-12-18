@@ -85,9 +85,9 @@ class FamilyFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         userViewModel.getCurrentFamily()
         userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner) { id ->
-            if (id != null) {
+            if (id != null)
                 userViewModel.getUsersInFamily(id)
-            }
+            else Log.e("Current family", "null")
         }
 
         userViewModel.getUserList().observe(viewLifecycleOwner) { users ->
@@ -100,7 +100,6 @@ class FamilyFragment : Fragment() {
                 btnCreate.visibility = View.GONE
                 tvCreate.visibility = View.GONE
                 adapter.submitList(users)
-                Log.d("get list user", users.toString())
             }
 
         }

@@ -60,7 +60,8 @@ private fun registerUser(name:String, email:String, password:String) {
                     startActivity(Intent(this, MainActivity::class.java))
                 }
             }
+            else Log.e("create user", it.exception.toString())
         }
-        .addOnCanceledListener() { Log.d("ADD", "Fail") }
+        .addOnCanceledListener() { Log.e("ADD", "Fail") }
 }
 }

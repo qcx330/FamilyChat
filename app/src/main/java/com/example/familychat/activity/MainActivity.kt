@@ -26,14 +26,13 @@ class MainActivity : AppCompatActivity() {
         Thread.sleep(1000)
         setContentView(R.layout.activity_main)
 
-
-        if (intent.extras != null){
-            val chatId = intent.extras!!.getString("chatId")
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra("chatId", chatId)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
-        }
+//        if (intent.extras != null){
+//            val chatId = intent.extras!!.getString("chatId")
+//            val intent = Intent(this, ChatActivity::class.java)
+//            intent.putExtra("chatId", chatId)
+//            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//            startActivity(intent)
+//        }
 
         bottomNav = findViewById(R.id.bottomNav)
         auth = FirebaseAuth.getInstance()
@@ -77,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                     .addOnFailureListener {
                         Log.i("Error updating fcmToken", it.message.toString())
                     }
-            }
+            } else Log.e("fcmToken", task.exception.toString())
 
         }
     }

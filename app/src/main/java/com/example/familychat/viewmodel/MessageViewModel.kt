@@ -142,7 +142,6 @@ class MessageViewModel : ViewModel() {
                                         chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                                         currentList.add(message)
                                         messageList.value = currentList
-//                                        adapter.submitList(currentList)
                                     } else Log.e("send message to family chat", task.exception.toString())
                                 }
                         } else Log.e("messageId image family", "null")
@@ -169,7 +168,6 @@ class MessageViewModel : ViewModel() {
                         chatRoomRef.child("timestamp").setValue(System.currentTimeMillis())
                         currentList.add(message)
                         messageList.value = currentList
-//                        adapter.submitList(currentList)
                     } else Log.e("send message to user chat", task.exception.toString())
                 }
         } else Log.e("messageId image user", "null")

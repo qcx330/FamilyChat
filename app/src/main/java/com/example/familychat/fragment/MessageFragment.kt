@@ -31,7 +31,7 @@ class MessageFragment : Fragment() {
     private lateinit var messageViewModel: MessageViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvMessage: TextView
-    private lateinit var adapter : ChatAdapter
+    private lateinit var adapter: ChatAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,46 +45,42 @@ class MessageFragment : Fragment() {
         recyclerView = view.findViewById(R.id.listMessage)
 
         tvMessage = view.findViewById(R.id.tvMessage)
-        adapter = ChatAdapter(object : RvInterface{
+        adapter = ChatAdapter(object : RvInterface {
             override fun OnClickItem(pos: Int) {
-                chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
-                        chats ->if (chats != null){
-                    Log.d("chat id intent", chats[pos].roomId!!)
-                    val intent = Intent(context, ChatActivity::class.java)
-                    intent.putExtra("id", chats[pos].roomId)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                }else Log.d("chat id intent", "null")
+                chatViewModel.getChatRoomList().observe(viewLifecycleOwner) { chats ->
+                    if (chats != null) {
+                        Log.d("chat id intent", chats[pos].roomId!!)
+                        val intent = Intent(context, ChatActivity::class.java)
+                        intent.putExtra("id", chats[pos].roomId)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    } else Log.e("chat id intent", "null")
 
                 }
-
             }
 
             override fun OnRemoveItem(pos: Int) {
-                TODO("Not yet implemented")
             }
         })
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
         userViewModel.getCurrentFamily()
-        userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
-                id -> if (id!= ""){
-                    Log.d("familyId", id!!)
-            chatViewModel.retrieveFamilyChat(id) }
+        userViewModel.getCurrentFamilyId().observe(viewLifecycleOwner) { id ->
+            if (id != "") {
+                Log.d("familyId", id!!)
+                chatViewModel.retrieveFamilyChat(id)
+            } else Log.d("get user's current family", "not in a family")
         }
         chatViewModel.retrieveUserChat()
-        chatViewModel.getChatRoomList().observe(viewLifecycleOwner){
-            chatRoom ->if (chatRoom != null) {
+        chatViewModel.getChatRoomList().observe(viewLifecycleOwner) { chatRoom ->
+            if (chatRoom != null) {
 //            val sortedList = chatRoom.sortedByDescending { it.timestamp }
-            adapter.submitList(chatRoom)
-            adapter.notifyDataSetChanged()
-            tvMessage.visibility = View.GONE
-        }
-            else {
+                adapter.submitList(chatRoom)
+                adapter.notifyDataSetChanged()
+                tvMessage.visibility = View.GONE
+            } else {
                 tvMessage.visibility = View.VISIBLE
-        }
-
-
+            }
         }
         return view
     }

@@ -75,10 +75,10 @@ class UserViewModel (): ViewModel() {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    Log.d("get current user", databaseError.message)
+                    Log.e("get current user", databaseError.message)
                 }
             })
-        }
+        } else Log.e("load current user", "null")
     }
     fun setUserAvatar(imageUri:Uri){
         val imageName = "${System.currentTimeMillis()}.jpg"
@@ -91,11 +91,11 @@ class UserViewModel (): ViewModel() {
                         saveImageDownloadUrlToDatabase(downloadUrl)
                         Log.d("DownloadUrl", downloadUrl)
                     } else {
-                        Log.d("Get download url", "Error getting download URL")
+                        Log.e("Get download url", "Error getting download URL")
                     }
                 }
             } else {
-                Log.d("Upload image","error uploading the image")
+                Log.e("Upload image","error uploading the image")
             }
         }
     }
@@ -118,8 +118,8 @@ class UserViewModel (): ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.d("Get current family", error.message.toString())
-                    currentFamilyId.value = null // Handle the error by passing an empty string or an appropriate value.
+                    Log.e("Get current family", error.message)
+                    currentFamilyId.value = null
                 }
             })
     }

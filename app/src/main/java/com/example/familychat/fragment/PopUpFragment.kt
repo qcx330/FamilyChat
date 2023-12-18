@@ -16,8 +16,8 @@ import com.google.android.material.textfield.TextInputEditText
 
 class PopUpFragment : DialogFragment() {
     private lateinit var viewModel: UserViewModel
-    private lateinit var btnAdd : AppCompatButton
-    private lateinit var edtUserId : TextInputEditText
+    private lateinit var btnAdd: AppCompatButton
+    private lateinit var edtUserId: TextInputEditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,18 +33,17 @@ class PopUpFragment : DialogFragment() {
         btnAdd = view.findViewById(R.id.btnAdd)
         edtUserId = view.findViewById(R.id.edtUserId)
         viewModel.getCurrentFamily()
-        btnAdd.setOnClickListener(){
-            viewModel.getCurrentFamilyId().observe(viewLifecycleOwner){
-                    id -> if (id!= null){
-                viewModel.addUser(edtUserId.text.toString(), id)
-                viewModel.getStatusAdd().observe(viewLifecycleOwner){
-                    status -> if (status==true){
-                        dismiss()
+        btnAdd.setOnClickListener() {
+            viewModel.getCurrentFamilyId().observe(viewLifecycleOwner) { id ->
+                if (id != null) {
+                    viewModel.addUser(edtUserId.text.toString(), id)
+                    viewModel.getStatusAdd().observe(viewLifecycleOwner) { status ->
+                        if (status == true) {
+                            dismiss()
+                        } else Toast.makeText(
+                            context, "User's already in another family", Toast.LENGTH_SHORT).show()
                     }
-                    else Toast.makeText(context, "User's already in another family", Toast.LENGTH_SHORT).show()
-                }
-            }
-                else Log.d("add member", "id null")
+                } else Log.e("add member", "id null")
             }
         }
         return view

@@ -73,7 +73,7 @@ class ChatViewModel : ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.d("retrieveMemberList", error.message)
+                    Log.e("retrieveMemberList", error.message)
                 }
             })
     }
@@ -87,12 +87,12 @@ class ChatViewModel : ViewModel() {
                     val user = userSnapshot.getValue(User::class.java)
                     if (user != null) {
                         users.add(user)
-                    }
+                    } else Log.e("fetchUserDetails", "user null")
                     memberList.postValue(users)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.d("fetchUserDetails", error.message)
+                    Log.e("fetchUserDetails", error.message)
                 }
             })
         }
@@ -137,23 +137,22 @@ class ChatViewModel : ViewModel() {
     fun getChatRoomWithUser(userId: String) {
         chatRef.child("UserChat").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.child("$currentUserId-$userId").exists()){
+                if (snapshot.child("$currentUserId-$userId").exists()) {
                     chatRoomId.postValue("$currentUserId-$userId")
                     Log.d("ChatroomId", "$currentUserId-$userId")
                     return
-                } else if (snapshot.child("$userId-$currentUserId").exists()){
+                } else if (snapshot.child("$userId-$currentUserId").exists()) {
                     chatRoomId.postValue("$userId-$currentUserId")
                     Log.d("ChatroomId", "$userId-$currentUserId")
                     return
-                }
-                else {
-                    Log.d("ChatroomId", "Not found")
+                } else {
+                    Log.w("ChatroomId", "Not found")
                     createChatRoom(userId)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.d("ChatroomId", error.message)
+                Log.e("ChatroomId", error.message)
                 chatRoomId.postValue(null)
             }
         })
@@ -161,12 +160,17 @@ class ChatViewModel : ViewModel() {
 
     private fun createChatRoom(userId: String) {
         val currentList = chatRoomList.value.orEmpty().toMutableList()
-//        val newChatRef = chatRef.child("UserChat").push()
         val chatId = "$currentUserId-$userId"
         val newChatRef = chatRef.child("UserChat")
         val members = listOf(currentUserId, userId)
         val messId = Random.nextInt()
-        val message = Message(messId.toString(),currentUserId, "Hello", System.currentTimeMillis(), MessageType.TEXT)
+        val message = Message(
+            messId.toString(),
+            currentUserId,
+            "Hello",
+            System.currentTimeMillis(),
+            MessageType.TEXT
+        )
         val mapMess = mapOf<String, Message>("WelcomeMessage" to message)
         val room =
             ChatRoom(
@@ -186,9 +190,9 @@ class ChatViewModel : ViewModel() {
                     currentList.add(room)
                     chatRoomList.value = currentList
                     adapter.submitList(currentList)
-                    println("Chat room created with ID: $chatId")
+                    Log.d("create chat room","Chat room created with ID: $chatId")
                 } else {
-                    println("Failed to create chat room: ${task.exception}")
+                    Log.e("create chat room", task.exception.toString())
                 }
             }
     }
